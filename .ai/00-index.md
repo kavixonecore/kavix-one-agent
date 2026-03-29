@@ -22,3 +22,4 @@
 | 11 | [11-test-plan.md](11-test-plan.md) | Test plan — L1-L5 levels, 3 domains, assertions per template, pass criteria |
 | 12 | [12-session-log.md](12-session-log.md) | Session 1 log — Phases 1-5 build, ~617K tokens, 590 tests |
 | 13 | [13-session-2-log.md](13-session-2-log.md) | Session 2 log — Integration tests, Swagger fix, Playwright, Ralph Loop, 735 total tests |
+| 14 | [14-session-3-log.md](14-session-3-log.md) | Session 3 log — JWT auth, enhanced CRUD tests, agent-one custom agent, 813 total tests |
