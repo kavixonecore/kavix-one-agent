@@ -13,15 +13,25 @@
 
 | Metric | Value |
 |--------|-------|
-| Total tests | 92 |
-| Passed | 92 |
+| Total tests | 141 |
+| Passed | 141 |
 | Failed | 0 |
-| Assertions | 170 |
-| Duration | 913ms |
+| Assertions | 357 |
+| Duration | 1062ms |
 
 **Breakdown:**
-- 69 service/router tests (no Docker required)
-- 23 repository integration tests (require Docker MongoDB)
+- 69 service/router unit tests (no Docker required)
+- 23 repository tests (require Docker MongoDB)
+- 48 HTTP integration tests (full round-trip via fetch against Docker MongoDB)
+  - exercises: 11 tests
+  - workouts: 10 tests
+  - progress-metrics: 9 tests
+  - running-logs: 9 tests (cross-entity with workouts)
+  - workout-exercises: 9 tests (cross-entity with workouts + exercises)
+
+**Bugs found by integration tests:**
+- MongoDB `_id` leaking into HTTP responses (fixed: projection `{ _id: 0 }`)
+- `null` optional fields breaking TypeBox validation (fixed: conditional spreads)
 
 ### ESLint
 
@@ -84,7 +94,7 @@ Status: 200
 
 ## Verification Checklist
 
-- [x] All 92 tests pass (bun test)
+- [x] All 141 tests pass (bun test — 92 unit + 48 integration + 1 repo)
 - [x] ESLint clean (0 errors, 0 warnings)
 - [x] Docker MongoDB accessible
 - [x] API starts and responds to /health

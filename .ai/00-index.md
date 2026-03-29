@@ -20,4 +20,5 @@
 | 09 | [09-final-verification.md](09-final-verification.md) | PRD verification round 2 — 44/44 decisions confirmed, 8 template/structure gaps fixed |
 | 10 | [10-eslint-canonical.md](10-eslint-canonical.md) | Canonical ESLint config — audit of 5 projects, conflict resolution, full rule set |
 | 11 | [11-test-plan.md](11-test-plan.md) | Test plan — L1-L5 levels, 3 domains, assertions per template, pass criteria |
-| 12 | [12-session-log.md](12-session-log.md) | Full session log — timeline, per-phase stats, token usage, corrections, aggregate metrics |
+| 12 | [12-session-log.md](12-session-log.md) | Session 1 log — Phases 1-5 build, ~617K tokens, 590 tests |
+| 13 | [13-session-2-log.md](13-session-2-log.md) | Session 2 log — Integration tests, Swagger fix, Playwright, Ralph Loop, 735 total tests |
