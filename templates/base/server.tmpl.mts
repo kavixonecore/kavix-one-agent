@@ -47,6 +47,7 @@ ${routerMounts};
     .use(cors())
     .use(swagger({ path: "/docs" }))
     .use(tracePlugin(logger))
+    .get("/", ({ redirect }) => redirect("/docs"))
     .use(healthRouter())
     .use(versionRouter())
     .use(apiRoutes);

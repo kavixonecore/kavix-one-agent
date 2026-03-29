@@ -83,5 +83,6 @@ export const createApp = (container?: IAppContainer): Elysia => {
     app.use(createWorkoutExerciseRouter(logger, container.workoutExerciseService));
   }
 
+
   return app;
 };

@@ -132,6 +132,7 @@ Existing code generators (Yeoman, Hygen, plop) produce flat scaffolds without un
 - [ ] **Must:** Generate router factories as exported functions receiving (logger, service, config) returning new Elysia({ prefix })
 - [ ] **Must:** Generate getContainer() IoC pattern returning { db, databaseConfig, repositories, services, helpers }
 - [ ] **Must:** Generate Elysia server setup with cors + swagger + tracePlugin + apiRoutes composition
+- [ ] **Must:** Configure Swagger at `/swagger` as the default documentation page — Elysia's swagger plugin serves the UI at this path automatically. Log the Swagger URL at server startup.
 - [ ] **Must:** Generate trace plugin with onRequest (ULID traceId), onAfterHandle (log response), onError (log error)
 - [ ] **Must:** Generate env config as Zod schema validating Bun.env at startup, exported as singleton
 - [ ] **Must:** Generate standardized response format: { success: true, data: [...], count: N } or { success: false, error: "message" }
