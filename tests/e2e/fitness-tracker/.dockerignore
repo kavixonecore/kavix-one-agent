@@ -1,0 +1,7 @@
+node_modules
+.docs
+.env
+.gitignore
+docs
+ui
+*.md

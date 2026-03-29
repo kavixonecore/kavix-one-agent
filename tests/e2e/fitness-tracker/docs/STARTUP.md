@@ -1,119 +1,170 @@
-# Fitness Tracker API — Startup Guide
+# Fitness Tracker API — Developer Setup
 
 ## Prerequisites
 
-- [Bun](https://bun.sh) v1.0+
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (for MongoDB)
+- [Docker](https://docs.docker.com/get-docker/) and Docker Compose
+- [Bun](https://bun.sh/) (for local development without Docker)
 
-## Quick Start
+---
 
-### 1. Install dependencies
+## Option 1: Full Docker Stack (recommended for new developers)
 
-```bash
-bun install
-```
-
-### 2. Configure environment
+Run the API + MongoDB together in containers:
 
 ```bash
-cp .env.example .env
-```
-
-The defaults in `.env.example` work with the provided `docker-compose.yml`.
-
-### 3. Start MongoDB
-
-```bash
+cd tests/e2e/fitness-tracker
 docker compose up -d
 ```
 
-This starts MongoDB 7 on port 27017 with:
-- Username: `admin`
-- Password: `password`
-- Database: `fitness_tracker`
+This starts:
+- **MongoDB 7** on port 27017 (with health check)
+- **Fitness Tracker API** on port 3000 (waits for MongoDB to be healthy)
 
-### 4. Start the API server
-
-```bash
-bun src/index.mts
-```
-
-The API starts on **http://localhost:3000** by default.
-
-### 5. View Swagger docs
-
-Open **http://localhost:3000/docs** in your browser.
-
-### 6. Health check
-
+Verify:
 ```bash
 curl http://localhost:3000/health
-# { "status": "ok", "timestamp": "...", "uptime": 0 }
+# { "status": "ok", "timestamp": "...", "uptime": 2 }
+```
+
+Swagger UI: http://localhost:3000/swagger
+
+Stop:
+```bash
+docker compose down
+```
+
+Stop and remove data:
+```bash
+docker compose down -v
+```
+
+---
+
+## Option 2: Local Bun + Docker MongoDB (for active development)
+
+Run MongoDB in Docker, API locally with hot reload:
+
+```bash
+# Terminal 1: Start MongoDB only
+cd tests/e2e/fitness-tracker
+docker compose up mongodb -d
+
+# Terminal 2: Install deps + start API locally
+cd tests/e2e/fitness-tracker
+bun install
+MONGODB_URI="mongodb://admin:password@localhost:27017/fitness_tracker?authSource=admin" bun src/index.mts
+```
+
+For hot reload during development:
+```bash
+MONGODB_URI="mongodb://admin:password@localhost:27017/fitness_tracker?authSource=admin" bun --watch src/index.mts
 ```
 
 ---
 
 ## Running Tests
 
-Unit tests (no database required):
+Tests require Docker MongoDB to be running:
 
 ```bash
-bun test src/features/exercises/__tests__/exercise.service.test.mts
-bun test src/features/exercises/__tests__/exercise.router.test.mts
-# ... or all at once:
+# Start MongoDB
+docker compose up mongodb -d
+
+# Run all tests (unit + integration)
 bun test
+
+# Run specific test file
+bun test src/__tests__/exercises.integration.test.mts
+
+# Run only unit tests (no Docker needed)
+bun test src/features/
 ```
 
-Integration tests (require MongoDB via Docker):
-
-```bash
-docker compose up -d
-MONGODB_URI=mongodb://admin:password@localhost:27017/fitness_tracker_test?authSource=admin bun test
-```
+| Test Type | Count | Docker Required |
+|-----------|-------|----------------|
+| Service/router unit tests | 69 | No |
+| Repository tests | 23 | Yes |
+| CRUD integration tests (HTTP) | 90 | Yes |
+| Auth integration tests | 9 | Yes |
+| **Total** | **191** | |
 
 ---
 
-## Available Endpoints
+## Environment Variables
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | /health | Health check |
-| GET | /version | API version info |
-| POST | /exercises | Create exercise |
-| GET | /exercises | List exercises (paginated, filterable) |
-| GET | /exercises/:id | Get exercise by ID |
-| PUT | /exercises/:id | Update exercise |
-| DELETE | /exercises/:id | Delete exercise |
-| POST | /workouts | Create workout |
-| GET | /workouts | List workouts (date range filter) |
-| GET | /workouts/:id | Get workout by ID |
-| PUT | /workouts/:id | Update workout |
-| DELETE | /workouts/:id | Delete workout |
-| POST | /progress-metrics | Create progress metric |
-| GET | /progress-metrics | List metrics |
-| GET | /progress-metrics/latest | Latest metric per type |
-| GET | /progress-metrics/by-type/:metricType | Metrics by type |
-| GET | /progress-metrics/:id | Get metric by ID |
-| PUT | /progress-metrics/:id | Update metric |
-| DELETE | /progress-metrics/:id | Delete metric |
-| POST | /running-logs | Create running log |
-| GET | /running-logs | List running logs |
-| GET | /running-logs/personal-bests | Personal bests |
-| GET | /running-logs/workout/:workoutId | Logs by workout |
-| GET | /running-logs/:id | Get log by ID |
-| PUT | /running-logs/:id | Update log |
-| DELETE | /running-logs/:id | Delete log |
-| POST | /workout-exercises | Link exercise to workout |
-| GET | /workout-exercises | List workout exercises |
-| GET | /workout-exercises/workout/:workoutId | Exercises for a workout |
-| GET | /workout-exercises/:id | Get by ID |
-| PUT | /workout-exercises/:id | Update |
-| DELETE | /workout-exercises/:id | Delete |
+Copy `.env.example` to `.env` and configure:
+
+```bash
+cp .env.example .env
+```
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `MONGODB_URI` | Yes | — | MongoDB connection string |
+| `PORT` | No | 3000 | API server port |
+| `NODE_ENV` | No | development | Environment name |
+| `LOG_LEVEL` | No | info | Winston log level |
+| `JWKS_URL` | No* | — | OIDC provider JWKS endpoint |
+| `JWT_ISSUER` | No | — | Expected JWT issuer |
+| `JWT_AUDIENCE` | No | — | Expected JWT audience |
+| `RATE_LIMIT_IP_PER_MIN` | No | 100 | Max requests per IP per minute |
+| `RATE_LIMIT_USER_PER_MIN` | No | 1000 | Max requests per user per minute |
+
+*When using Docker Compose, all env vars are set in `docker-compose.yml`.
 
 ---
 
-## Stopping
+## Auth Configuration
+
+The API uses provider-agnostic JWT auth via JWKS. Compatible with Auth0, AWS Cognito, Azure AD, or any OpenID Connect provider.
+
+### Auth0
+```bash
+JWKS_URL=https://your-tenant.auth0.com/.well-known/jwks.json
+JWT_ISSUER=https://your-tenant.auth0.com/
+JWT_AUDIENCE=https://api.fitness-tracker.com
+```
+
+### AWS Cognito
+```bash
+JWKS_URL=https://cognito-idp.us-east-1.amazonaws.com/us-east-1_xxxxx/.well-known/jwks.json
+JWT_ISSUER=https://cognito-idp.us-east-1.amazonaws.com/us-east-1_xxxxx
+JWT_AUDIENCE=your-app-client-id
+```
+
+### Public Endpoints (no auth required)
+- `GET /health`
+- `GET /version`
+- `GET /swagger` (and all `/swagger/*` paths)
+
+All other endpoints require `Authorization: Bearer <token>` header.
+
+---
+
+## API Endpoints
+
+Full interactive docs: http://localhost:3000/swagger
+
+| Group | Endpoints |
+|-------|-----------|
+| Health | `GET /health`, `GET /version` |
+| Exercises | `POST`, `GET`, `GET /:id`, `PUT /:id`, `DELETE /:id` |
+| Workouts | `POST`, `GET` (?startDate, ?endDate, ?status), `GET /:id`, `PUT /:id`, `DELETE /:id` |
+| Progress Metrics | `POST`, `GET`, `GET /latest`, `GET /by-type/:type`, `GET /:id`, `PUT /:id`, `DELETE /:id` |
+| Running Logs | `POST`, `GET`, `GET /personal-bests`, `GET /workout/:workoutId`, `GET /:id`, `PUT /:id`, `DELETE /:id` |
+| Workout Exercises | `POST`, `GET`, `GET /workout/:workoutId`, `GET /:id`, `PUT /:id`, `DELETE /:id` |
+
+Response format: `{ success: true, data, count }` or `{ success: false, error: "..." }`
+
+---
+
+## Building the Docker Image
 
 ```bash
-docker compose down
+docker build -t fitness-tracker-api .
+```
+
+Or let Docker Compose build it:
+```bash
+docker compose up --build -d
 ```
