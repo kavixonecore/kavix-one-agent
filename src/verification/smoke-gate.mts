@@ -17,7 +17,7 @@ async function waitForServer(port: number, timeoutMs: number): Promise<boolean> 
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     try {
-      const response = await fetch(`http://localhost:${port}/healthz`, { signal: AbortSignal.timeout(1000) });
+      const response = await fetch(`http://localhost:${port}/health`, { signal: AbortSignal.timeout(1000) });
       if (response.ok) {
         return true;
       }
@@ -66,7 +66,7 @@ async function stopDockerCompose(projectDir: string): Promise<void> {
  * Runs smoke tests against a generated Elysia server.
  * Starts docker-compose, starts the server, hits endpoints, shuts everything down.
  * @param projectDir - Absolute path to the generated project directory.
- * @param endpoints - List of endpoint paths to test (e.g. ["/healthz", "/api/users"]).
+ * @param endpoints - List of endpoint paths to test (e.g. ["/health", "/api/users"]).
  */
 export async function runSmokeGate(
   projectDir: string,

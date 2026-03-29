@@ -36,7 +36,7 @@ describe("runSmokeGate", () => {
       .mockReturnValueOnce(makeFakeProc(1)) // docker-compose up (fails)
       .mockReturnValueOnce(makeFakeProc(0)); // docker-compose down (cleanup)
 
-    const result = await runSmokeGate("/fake/project", ["/healthz"]);
+    const result = await runSmokeGate("/fake/project", ["/health"]);
 
     expect(result.passed)
 .toBe(false);
@@ -62,7 +62,7 @@ describe("runSmokeGate", () => {
       .mockReturnValueOnce(makeFakeProc(1)) // docker-compose up (fails)
       .mockReturnValueOnce(makeFakeProc(0)); // docker-compose down (cleanup)
 
-    const result = await runSmokeGate("/fake/project", ["/healthz"]);
+    const result = await runSmokeGate("/fake/project", ["/health"]);
 
     expect(result.durationMs)
 .toBeGreaterThanOrEqual(0);
@@ -73,7 +73,7 @@ describe("runSmokeGate", () => {
       .mockReturnValueOnce(makeFakeProc(1)) // docker-compose up (fails)
       .mockReturnValueOnce(makeFakeProc(0)); // docker-compose down (cleanup)
 
-    const result = await runSmokeGate("/fake/project", ["/healthz"]);
+    const result = await runSmokeGate("/fake/project", ["/health"]);
 
     expect(Array.isArray(result.errors))
 .toBe(true);

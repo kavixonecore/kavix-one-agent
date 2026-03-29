@@ -1,17 +1,19 @@
+import { ok, err } from "../../shared/types/index.mjs";
+import { AppError } from "../../shared/errors/index.mjs";
+import { logger } from "../../shared/logger.mjs";
+
 import type { MongoClient, Collection } from "mongodb";
 import type { IWorkoutExercise } from "./interfaces/index.mjs";
 import type { UpdateWorkoutExercise, WorkoutExerciseQuery } from "./types/index.mjs";
 import type { Result } from "../../shared/types/index.mjs";
-import { ok, err } from "../../shared/types/index.mjs";
-import { AppError } from "../../shared/errors/index.mjs";
-import { logger } from "../../shared/logger.mjs";
 
 export class WorkoutExerciseRepository {
 
   private readonly collection: Collection<IWorkoutExercise>;
 
   public constructor(client: MongoClient, dbName: string) {
-    this.collection = client.db(dbName).collection<IWorkoutExercise>("workout_exercises");
+    this.collection = client.db(dbName)
+.collection<IWorkoutExercise>("workout_exercises");
   }
 
   public async create(workoutExercise: IWorkoutExercise): Promise<Result<IWorkoutExercise, AppError>> {
@@ -27,12 +29,16 @@ export class WorkoutExerciseRepository {
   public async findAll(query: WorkoutExerciseQuery): Promise<Result<IWorkoutExercise[], AppError>> {
     try {
       const filter: { workoutId?: string; exerciseId?: string } = {};
-      if (query.workoutId) filter.workoutId = query.workoutId;
-      if (query.exerciseId) filter.exerciseId = query.exerciseId;
+      if (query.workoutId) {
+filter.workoutId = query.workoutId;
+}
+      if (query.exerciseId) {
+filter.exerciseId = query.exerciseId;
+}
 
       const skip = (query.page - 1) * query.limit;
       const docs = await this.collection
-        .find(filter)
+        .find(filter, { projection: { _id: 0 } })
         .sort({ order: 1 })
         .skip(skip)
         .limit(query.limit)
@@ -46,7 +52,7 @@ export class WorkoutExerciseRepository {
 
   public async findById(id: string): Promise<Result<IWorkoutExercise | null, AppError>> {
     try {
-      const doc = await this.collection.findOne({ id });
+      const doc = await this.collection.findOne({ id }, { projection: { _id: 0 } });
       return ok(doc);
     } catch (error) {
       logger.error("WorkoutExerciseRepository.findById failed", { error });
@@ -57,7 +63,7 @@ export class WorkoutExerciseRepository {
   public async findByWorkoutId(workoutId: string): Promise<Result<IWorkoutExercise[], AppError>> {
     try {
       const docs = await this.collection
-        .find({ workoutId })
+        .find({ workoutId }, { projection: { _id: 0 } })
         .sort({ order: 1 })
         .toArray();
       return ok(docs);
@@ -70,20 +76,35 @@ export class WorkoutExerciseRepository {
   public async update(id: string, data: UpdateWorkoutExercise): Promise<Result<IWorkoutExercise | null, AppError>> {
     try {
       const updateData: Partial<IWorkoutExercise> = {
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date()
+.toISOString(),
       };
-      if (data.order !== undefined) updateData.order = data.order;
-      if (data.sets !== undefined) updateData.sets = data.sets;
-      if (data.reps !== undefined) updateData.reps = data.reps;
-      if (data.weightLbs !== undefined) updateData.weightLbs = data.weightLbs;
-      if (data.durationSeconds !== undefined) updateData.durationSeconds = data.durationSeconds;
-      if (data.restSeconds !== undefined) updateData.restSeconds = data.restSeconds;
-      if (data.notes !== undefined) updateData.notes = data.notes;
+      if (data.order !== undefined) {
+updateData.order = data.order;
+}
+      if (data.sets !== undefined) {
+updateData.sets = data.sets;
+}
+      if (data.reps !== undefined) {
+updateData.reps = data.reps;
+}
+      if (data.weightLbs !== undefined) {
+updateData.weightLbs = data.weightLbs;
+}
+      if (data.durationSeconds !== undefined) {
+updateData.durationSeconds = data.durationSeconds;
+}
+      if (data.restSeconds !== undefined) {
+updateData.restSeconds = data.restSeconds;
+}
+      if (data.notes !== undefined) {
+updateData.notes = data.notes;
+}
 
       const result = await this.collection.findOneAndUpdate(
         { id },
         { $set: updateData },
-        { returnDocument: "after" },
+        { returnDocument: "after", projection: { _id: 0 } }
       );
       return ok(result);
     } catch (error) {
@@ -105,8 +126,12 @@ export class WorkoutExerciseRepository {
   public async count(query: Omit<WorkoutExerciseQuery, "page" | "limit">): Promise<Result<number, AppError>> {
     try {
       const filter: { workoutId?: string; exerciseId?: string } = {};
-      if (query.workoutId) filter.workoutId = query.workoutId;
-      if (query.exerciseId) filter.exerciseId = query.exerciseId;
+      if (query.workoutId) {
+filter.workoutId = query.workoutId;
+}
+      if (query.exerciseId) {
+filter.exerciseId = query.exerciseId;
+}
       const total = await this.collection.countDocuments(filter);
       return ok(total);
     } catch (error) {

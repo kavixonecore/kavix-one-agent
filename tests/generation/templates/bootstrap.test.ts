@@ -159,9 +159,9 @@ describe("health-router.tmpl.mts", () => {
 .toContain("export function healthRouter");
   });
 
-  it("has GET /healthz route returning status ok", () => {
+  it("has GET /health route returning status ok", () => {
     expect(output)
-.toContain("/healthz");
+.toContain("/health");
     expect(output)
 .toContain("status: \"ok\"");
   });

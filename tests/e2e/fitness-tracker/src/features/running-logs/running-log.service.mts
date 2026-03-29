@@ -1,9 +1,11 @@
 import { ulid } from "ulidx";
+
+import { ok, err } from "../../shared/types/index.mjs";
+import { NotFoundError, ValidationError } from "../../shared/errors/index.mjs";
+
 import type { IRunningLog } from "./interfaces/index.mjs";
 import type { CreateRunningLog, UpdateRunningLog, RunningLogQuery, IPersonalBests } from "./types/index.mjs";
 import type { Result } from "../../shared/types/index.mjs";
-import { ok, err } from "../../shared/types/index.mjs";
-import { NotFoundError, ValidationError } from "../../shared/errors/index.mjs";
 import type { AppError } from "../../shared/errors/index.mjs";
 import type { RunningLogRepository } from "./running-log.repository.mjs";
 import type { WorkoutService } from "../workouts/workout.service.mjs";
@@ -16,6 +18,7 @@ export interface IRunningLogListResult {
 export class RunningLogService {
 
   private readonly repository: RunningLogRepository;
+
   private readonly workoutService: WorkoutService;
 
   public constructor(repository: RunningLogRepository, workoutService: WorkoutService) {
@@ -31,19 +34,20 @@ export class RunningLogService {
 
     const pace = data.paceMinutesPerMile ?? (data.durationMinutes / data.distanceMiles);
 
-    const now = new Date().toISOString();
+    const now = new Date()
+.toISOString();
     const log: IRunningLog = {
       id: ulid(),
       workoutId: data.workoutId,
       distanceMiles: data.distanceMiles,
       durationMinutes: data.durationMinutes,
       paceMinutesPerMile: pace,
-      routeName: data.routeName,
-      elevationGainFeet: data.elevationGainFeet,
-      heartRateAvg: data.heartRateAvg,
-      weather: data.weather,
-      notes: data.notes,
-      userId: data.userId,
+      ...(data.routeName !== undefined && { routeName: data.routeName }),
+      ...(data.elevationGainFeet !== undefined && { elevationGainFeet: data.elevationGainFeet }),
+      ...(data.heartRateAvg !== undefined && { heartRateAvg: data.heartRateAvg }),
+      ...(data.weather !== undefined && { weather: data.weather }),
+      ...(data.notes !== undefined && { notes: data.notes }),
+      ...(data.userId !== undefined && { userId: data.userId }),
       createdAt: now,
       updatedAt: now,
     };

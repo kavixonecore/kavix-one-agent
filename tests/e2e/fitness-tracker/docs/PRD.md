@@ -69,7 +69,7 @@
 - [ ] Must: **DI Container** — `getContainer()` function that registers and resolves all services, repositories, and the MongoDB client
 - [ ] Must: **MongoDB Connection** — Native MongoDB driver connection with proper lifecycle (connect on startup, close on shutdown); registered in DI container
 - [ ] Must: **Winston + TraceLogger** — Logger setup with Winston; TraceLogger for request tracing; no `console.log` anywhere
-- [ ] Must: **Health Check Endpoint** — `GET /healthz` returns `{ status: "ok", timestamp: string, uptime: number }`
+- [ ] Must: **Health Check Endpoint** — `GET /health` returns `{ status: "ok", timestamp: string, uptime: number }`
 - [ ] Must: **Version Endpoint** — `GET /version` returns `{ version: string, environment: string }`
 - [ ] Must: **Swagger Docs** — Elysia Swagger plugin at `/docs` with all routes documented
 
@@ -339,7 +339,7 @@ export const MetricType = {
 | Swagger Route Coverage        | All endpoints appear in /docs   | Open /docs and verify all routes listed           |
 | Docker DB Connectivity        | Tests connect to Dockerized DB  | `docker compose up -d && bun test` passes        |
 | Pattern Compliance            | All files follow CLAUDE.md      | Code review: .mts files, DI, no `any`, no enums |
-| Health Check                  | /healthz returns 200            | `curl localhost:PORT/healthz` returns OK         |
+| Health Check                  | /health returns 200            | `curl localhost:PORT/health` returns OK         |
 | Angular Build                 | Zero build errors               | `ng build` exits with code 0                     |
 | Chart Rendering               | All 5 chart types render data   | Manual verification in browser                   |
 

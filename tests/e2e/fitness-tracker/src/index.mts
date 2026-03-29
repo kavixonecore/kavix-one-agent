@@ -20,8 +20,12 @@ const start = async (): Promise<void> => {
     process.exit(0);
   };
 
-  process.on("SIGINT", () => { void shutdown(); });
-  process.on("SIGTERM", () => { void shutdown(); });
+  process.on("SIGINT", () => {
+ void shutdown();
+});
+  process.on("SIGTERM", () => {
+ void shutdown();
+});
 };
 
 void start();

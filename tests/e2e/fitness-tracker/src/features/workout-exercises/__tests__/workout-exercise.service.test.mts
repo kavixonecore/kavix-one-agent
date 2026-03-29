@@ -1,22 +1,26 @@
 import { describe, it, expect, mock, beforeEach } from "bun:test";
+import { ulid } from "ulidx";
+
 import { WorkoutExerciseService } from "../workout-exercise.service.mjs";
+import { ok, err } from "../../../shared/types/index.mjs";
+import { AppError, NotFoundError, ValidationError } from "../../../shared/errors/index.mjs";
+
 import type { WorkoutExerciseRepository } from "../workout-exercise.repository.mjs";
 import type { WorkoutService } from "../../workouts/workout.service.mjs";
 import type { ExerciseService } from "../../exercises/exercise.service.mjs";
-import { ok, err } from "../../../shared/types/index.mjs";
-import { AppError, NotFoundError, ValidationError } from "../../../shared/errors/index.mjs";
 import type { IWorkoutExercise } from "../interfaces/index.mjs";
 import type { IWorkout } from "../../workouts/interfaces/index.mjs";
 import type { IExercise } from "../../exercises/interfaces/index.mjs";
-import { ulid } from "ulidx";
 
 const makeWorkoutExercise = (overrides: Partial<IWorkoutExercise> = {}): IWorkoutExercise => ({
   id: ulid(),
   workoutId: "workout-1",
   exerciseId: "exercise-1",
   order: 1,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: new Date()
+.toISOString(),
+  updatedAt: new Date()
+.toISOString(),
   ...overrides,
 });
 
@@ -26,8 +30,10 @@ const makeWorkout = (): IWorkout => ({
   workoutType: "weightlifting",
   status: "planned",
   date: "2024-01-15",
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: new Date()
+.toISOString(),
+  updatedAt: new Date()
+.toISOString(),
 });
 
 const makeExercise = (): IExercise => ({
@@ -38,8 +44,10 @@ const makeExercise = (): IExercise => ({
   difficultyLevel: "intermediate",
   equipmentRequired: ["barbell"],
   instructions: "Squat down",
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: new Date()
+.toISOString(),
+  updatedAt: new Date()
+.toISOString(),
 });
 
 const makeMockRepo = (): WorkoutExerciseRepository => ({
@@ -79,7 +87,8 @@ describe("WorkoutExerciseService", () => {
       exerciseId: "exercise-1",
       order: 1,
     });
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
   });
 
   it("should fail when workoutId does not exist", async () => {
@@ -89,9 +98,11 @@ describe("WorkoutExerciseService", () => {
       exerciseId: "exercise-1",
       order: 1,
     });
-    expect(result.ok).toBe(false);
+    expect(result.ok)
+.toBe(false);
     if (!result.ok) {
-      expect(result.error).toBeInstanceOf(ValidationError);
+      expect(result.error)
+.toBeInstanceOf(ValidationError);
     }
   });
 
@@ -102,32 +113,39 @@ describe("WorkoutExerciseService", () => {
       exerciseId: "bad-id",
       order: 1,
     });
-    expect(result.ok).toBe(false);
+    expect(result.ok)
+.toBe(false);
     if (!result.ok) {
-      expect(result.error).toBeInstanceOf(ValidationError);
+      expect(result.error)
+.toBeInstanceOf(ValidationError);
     }
   });
 
   it("should find by workoutId", async () => {
     const result = await service.findByWorkoutId("workout-1");
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
     if (result.ok) {
-      expect(result.value.length).toBe(1);
+      expect(result.value.length)
+.toBe(1);
     }
   });
 
   it("should return NotFoundError on findById when missing", async () => {
     mockRepo.findById = mock(() => Promise.resolve(ok(null)));
     const result = await service.findById("bad-id");
-    expect(result.ok).toBe(false);
+    expect(result.ok)
+.toBe(false);
     if (!result.ok) {
-      expect(result.error).toBeInstanceOf(NotFoundError);
+      expect(result.error)
+.toBeInstanceOf(NotFoundError);
     }
   });
 
   it("should propagate repo error", async () => {
     mockRepo.findById = mock(() => Promise.resolve(err(new AppError("DB", 500, "DB_ERROR"))));
     const result = await service.findById("id");
-    expect(result.ok).toBe(false);
+    expect(result.ok)
+.toBe(false);
   });
 });

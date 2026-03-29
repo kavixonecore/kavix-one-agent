@@ -127,7 +127,7 @@ export class GenerationEngine {
   readonly #DEFAULT_VERIFICATION_OPTIONS: IVerificationOptions = {
     maxRetries: 3,
     skipSmoke: true,
-    endpoints: ["/healthz"],
+    endpoints: ["/health"],
   };
 
   public async generate(

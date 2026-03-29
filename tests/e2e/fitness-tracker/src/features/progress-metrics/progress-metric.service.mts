@@ -1,12 +1,14 @@
 import { ulid } from "ulidx";
+
+import { ok, err } from "../../shared/types/index.mjs";
+import { NotFoundError, ValidationError } from "../../shared/errors/index.mjs";
+import { MetricType } from "./progress-metric.constants.mjs";
+
 import type { IProgressMetric } from "./interfaces/index.mjs";
 import type { CreateProgressMetric, UpdateProgressMetric, ProgressMetricQuery } from "./types/index.mjs";
 import type { Result } from "../../shared/types/index.mjs";
-import { ok, err } from "../../shared/types/index.mjs";
-import { NotFoundError, ValidationError } from "../../shared/errors/index.mjs";
 import type { AppError } from "../../shared/errors/index.mjs";
 import type { ProgressMetricRepository } from "./progress-metric.repository.mjs";
-import { MetricType } from "./progress-metric.constants.mjs";
 import type { MetricTypeValue } from "./progress-metric.constants.mjs";
 
 export interface IProgressMetricListResult {
@@ -27,16 +29,17 @@ export class ProgressMetricService {
       return err(new ValidationError("customMetricName is required when metricType is 'custom'"));
     }
 
-    const now = new Date().toISOString();
+    const now = new Date()
+.toISOString();
     const metric: IProgressMetric = {
       id: ulid(),
       metricType: data.metricType as MetricTypeValue,
       value: data.value,
       unit: data.unit,
       date: data.date,
-      customMetricName: data.customMetricName,
-      notes: data.notes,
-      userId: data.userId,
+      ...(data.customMetricName !== undefined && { customMetricName: data.customMetricName }),
+      ...(data.notes !== undefined && { notes: data.notes }),
+      ...(data.userId !== undefined && { userId: data.userId }),
       createdAt: now,
       updatedAt: now,
     };
@@ -78,7 +81,7 @@ export class ProgressMetricService {
   public async findByMetricType(
     metricType: string,
     startDate?: string,
-    endDate?: string,
+    endDate?: string
   ): Promise<Result<IProgressMetric[], AppError>> {
     return this.repository.findByMetricType(metricType as MetricTypeValue, startDate, endDate);
   }

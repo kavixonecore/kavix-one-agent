@@ -148,7 +148,7 @@ const configFeatureSpec: IFeatureSpec = {
 - [ ] Environment variables for root user/password
 
 #### health-router.tmpl.mts
-- [ ] GET /healthz returns `{ status: "ok", timestamp, service }`
+- [ ] GET /health returns `{ status: "ok", timestamp, service }`
 
 #### version-router.tmpl.mts
 - [ ] GET /version returns `{ version, buildTime, gitCommit }`
@@ -289,7 +289,7 @@ const configFeatureSpec: IFeatureSpec = {
 
 **Assertions:**
 - [ ] Server starts without errors on configured port
-- [ ] GET /healthz returns `{ status: "ok" }` with 200
+- [ ] GET /health returns `{ status: "ok" }` with 200
 - [ ] GET /version returns version info with 200
 - [ ] GET /api/{entity} returns `{ success: true, data: [], count: 0 }` with 200
 - [ ] POST /api/{entity} with valid body returns 201 with created entity

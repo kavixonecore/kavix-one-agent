@@ -1,10 +1,11 @@
+import { ok, err } from "../../shared/types/index.mjs";
+import { AppError } from "../../shared/errors/index.mjs";
+import { logger } from "../../shared/logger.mjs";
+
 import type { MongoClient, Collection } from "mongodb";
 import type { IProgressMetric } from "./interfaces/index.mjs";
 import type { UpdateProgressMetric, ProgressMetricQuery } from "./types/index.mjs";
 import type { Result } from "../../shared/types/index.mjs";
-import { ok, err } from "../../shared/types/index.mjs";
-import { AppError } from "../../shared/errors/index.mjs";
-import { logger } from "../../shared/logger.mjs";
 import type { MetricTypeValue } from "./progress-metric.constants.mjs";
 
 export class ProgressMetricRepository {
@@ -12,7 +13,8 @@ export class ProgressMetricRepository {
   private readonly collection: Collection<IProgressMetric>;
 
   public constructor(client: MongoClient, dbName: string) {
-    this.collection = client.db(dbName).collection<IProgressMetric>("progress_metrics");
+    this.collection = client.db(dbName)
+.collection<IProgressMetric>("progress_metrics");
   }
 
   public async create(metric: IProgressMetric): Promise<Result<IProgressMetric, AppError>> {
@@ -32,16 +34,22 @@ export class ProgressMetricRepository {
         date?: { $gte?: string; $lte?: string };
       } = {};
 
-      if (query.metricType) filter.metricType = query.metricType as MetricTypeValue;
+      if (query.metricType) {
+filter.metricType = query.metricType as MetricTypeValue;
+}
       if (query.startDate || query.endDate) {
         filter.date = {};
-        if (query.startDate) filter.date.$gte = query.startDate;
-        if (query.endDate) filter.date.$lte = query.endDate;
+        if (query.startDate) {
+filter.date.$gte = query.startDate;
+}
+        if (query.endDate) {
+filter.date.$lte = query.endDate;
+}
       }
 
       const skip = (query.page - 1) * query.limit;
       const docs = await this.collection
-        .find(filter)
+        .find(filter, { projection: { _id: 0 } })
         .sort({ date: -1 })
         .skip(skip)
         .limit(query.limit)
@@ -55,7 +63,7 @@ export class ProgressMetricRepository {
 
   public async findById(id: string): Promise<Result<IProgressMetric | null, AppError>> {
     try {
-      const doc = await this.collection.findOne({ id });
+      const doc = await this.collection.findOne({ id }, { projection: { _id: 0 } });
       return ok(doc);
     } catch (error) {
       logger.error("ProgressMetricRepository.findById failed", { error });
@@ -66,7 +74,7 @@ export class ProgressMetricRepository {
   public async findByMetricType(
     metricType: MetricTypeValue,
     startDate?: string,
-    endDate?: string,
+    endDate?: string
   ): Promise<Result<IProgressMetric[], AppError>> {
     try {
       const filter: {
@@ -76,12 +84,16 @@ export class ProgressMetricRepository {
 
       if (startDate || endDate) {
         filter.date = {};
-        if (startDate) filter.date.$gte = startDate;
-        if (endDate) filter.date.$lte = endDate;
+        if (startDate) {
+filter.date.$gte = startDate;
+}
+        if (endDate) {
+filter.date.$lte = endDate;
+}
       }
 
       const docs = await this.collection
-        .find(filter)
+        .find(filter, { projection: { _id: 0 } })
         .sort({ date: -1 })
         .toArray();
       return ok(docs);
@@ -102,7 +114,9 @@ export class ProgressMetricRepository {
           },
         },
         { $replaceRoot: { newRoot: "$doc" } },
-      ]).toArray();
+        { $project: { _id: 0 } },
+      ])
+.toArray();
       return ok(docs);
     } catch (error) {
       logger.error("ProgressMetricRepository.getLatest failed", { error });
@@ -113,19 +127,32 @@ export class ProgressMetricRepository {
   public async update(id: string, data: UpdateProgressMetric): Promise<Result<IProgressMetric | null, AppError>> {
     try {
       const updateData: Partial<IProgressMetric> = {
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date()
+.toISOString(),
       };
-      if (data.metricType !== undefined) updateData.metricType = data.metricType as MetricTypeValue;
-      if (data.value !== undefined) updateData.value = data.value;
-      if (data.unit !== undefined) updateData.unit = data.unit;
-      if (data.date !== undefined) updateData.date = data.date;
-      if (data.customMetricName !== undefined) updateData.customMetricName = data.customMetricName;
-      if (data.notes !== undefined) updateData.notes = data.notes;
+      if (data.metricType !== undefined) {
+updateData.metricType = data.metricType as MetricTypeValue;
+}
+      if (data.value !== undefined) {
+updateData.value = data.value;
+}
+      if (data.unit !== undefined) {
+updateData.unit = data.unit;
+}
+      if (data.date !== undefined) {
+updateData.date = data.date;
+}
+      if (data.customMetricName !== undefined) {
+updateData.customMetricName = data.customMetricName;
+}
+      if (data.notes !== undefined) {
+updateData.notes = data.notes;
+}
 
       const result = await this.collection.findOneAndUpdate(
         { id },
         { $set: updateData },
-        { returnDocument: "after" },
+        { returnDocument: "after", projection: { _id: 0 } }
       );
       return ok(result);
     } catch (error) {
@@ -151,11 +178,17 @@ export class ProgressMetricRepository {
         date?: { $gte?: string; $lte?: string };
       } = {};
 
-      if (query.metricType) filter.metricType = query.metricType as MetricTypeValue;
+      if (query.metricType) {
+filter.metricType = query.metricType as MetricTypeValue;
+}
       if (query.startDate || query.endDate) {
         filter.date = {};
-        if (query.startDate) filter.date.$gte = query.startDate;
-        if (query.endDate) filter.date.$lte = query.endDate;
+        if (query.startDate) {
+filter.date.$gte = query.startDate;
+}
+        if (query.endDate) {
+filter.date.$lte = query.endDate;
+}
       }
 
       const total = await this.collection.countDocuments(filter);

@@ -1,10 +1,12 @@
 import { Elysia, t } from "elysia";
-import type { RunningLogService } from "./running-log.service.mjs";
-import type { Logger } from "winston";
+
 import { createRunningLogSchema } from "./schemas/create-running-log.schema.mjs";
 import { updateRunningLogSchema } from "./schemas/update-running-log.schema.mjs";
 import { runningLogQuerySchema } from "./schemas/running-log-query.schema.mjs";
 import { AppError } from "../../shared/errors/index.mjs";
+
+import type { Logger } from "winston";
+import type { RunningLogService } from "./running-log.service.mjs";
 
 const tRunningLogBody = t.Object({
   workoutId: t.String({ minLength: 1 }),
@@ -93,7 +95,7 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "Create running log" },
-      },
+      }
     )
     .get(
       "/",
@@ -118,7 +120,7 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "List running logs" },
-      },
+      }
     )
     .get(
       "/personal-bests",
@@ -137,7 +139,7 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "Get personal bests" },
-      },
+      }
     )
     .get(
       "/workout/:workoutId",
@@ -156,7 +158,7 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "Get running logs by workout ID" },
-      },
+      }
     )
     .get(
       "/:id",
@@ -175,7 +177,7 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "Get running log by ID" },
-      },
+      }
     )
     .put(
       "/:id",
@@ -201,7 +203,7 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "Update running log" },
-      },
+      }
     )
     .delete(
       "/:id",
@@ -220,6 +222,6 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "Delete running log" },
-      },
+      }
     );
 };

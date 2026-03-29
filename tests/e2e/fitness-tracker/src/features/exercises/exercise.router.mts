@@ -1,10 +1,12 @@
 import { Elysia, t } from "elysia";
-import type { ExerciseService } from "./exercise.service.mjs";
-import type { Logger } from "winston";
+
 import { createExerciseSchema } from "./schemas/create-exercise.schema.mjs";
 import { updateExerciseSchema } from "./schemas/update-exercise.schema.mjs";
 import { exerciseQuerySchema } from "./schemas/exercise-query.schema.mjs";
 import { AppError } from "../../shared/errors/index.mjs";
+
+import type { Logger } from "winston";
+import type { ExerciseService } from "./exercise.service.mjs";
 
 const tExerciseBody = t.Object({
   name: t.String({ minLength: 1, maxLength: 200 }),
@@ -112,7 +114,7 @@ export const createExerciseRouter = (loggerInstance: Logger, service: ExerciseSe
           500: tErrorResponse,
         },
         detail: { tags: ["Exercises"], summary: "Create exercise" },
-      },
+      }
     )
     .get(
       "/",
@@ -137,7 +139,7 @@ export const createExerciseRouter = (loggerInstance: Logger, service: ExerciseSe
           500: tErrorResponse,
         },
         detail: { tags: ["Exercises"], summary: "List exercises" },
-      },
+      }
     )
     .get(
       "/:id",
@@ -157,7 +159,7 @@ export const createExerciseRouter = (loggerInstance: Logger, service: ExerciseSe
           500: tErrorResponse,
         },
         detail: { tags: ["Exercises"], summary: "Get exercise by ID" },
-      },
+      }
     )
     .put(
       "/:id",
@@ -183,7 +185,7 @@ export const createExerciseRouter = (loggerInstance: Logger, service: ExerciseSe
           500: tErrorResponse,
         },
         detail: { tags: ["Exercises"], summary: "Update exercise" },
-      },
+      }
     )
     .delete(
       "/:id",
@@ -202,6 +204,6 @@ export const createExerciseRouter = (loggerInstance: Logger, service: ExerciseSe
           500: tErrorResponse,
         },
         detail: { tags: ["Exercises"], summary: "Delete exercise" },
-      },
+      }
     );
 };

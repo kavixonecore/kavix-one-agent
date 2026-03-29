@@ -269,7 +269,7 @@ src/app.mts
 
 - [ ] Verify all routes registered in app.mts
 - [ ] Verify Swagger at /docs lists all endpoints with request/response schemas
-- [ ] Verify GET /healthz returns `{ status: "ok", timestamp, uptime }`
+- [ ] Verify GET /health returns `{ status: "ok", timestamp, uptime }`
 - [ ] Verify GET /version returns `{ version, environment }`
 - [ ] Verify CORS configured for localhost:4200
 - [ ] Run full `eslint --fix`

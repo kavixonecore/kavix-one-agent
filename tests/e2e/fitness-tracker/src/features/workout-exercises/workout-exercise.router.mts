@@ -1,10 +1,12 @@
 import { Elysia, t } from "elysia";
-import type { WorkoutExerciseService } from "./workout-exercise.service.mjs";
-import type { Logger } from "winston";
+
 import { createWorkoutExerciseSchema } from "./schemas/create-workout-exercise.schema.mjs";
 import { updateWorkoutExerciseSchema } from "./schemas/update-workout-exercise.schema.mjs";
 import { workoutExerciseQuerySchema } from "./schemas/workout-exercise-query.schema.mjs";
 import { AppError } from "../../shared/errors/index.mjs";
+
+import type { Logger } from "winston";
+import type { WorkoutExerciseService } from "./workout-exercise.service.mjs";
 
 const tWorkoutExerciseBody = t.Object({
   workoutId: t.String({ minLength: 1 }),
@@ -87,7 +89,7 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
           500: tErrorResponse,
         },
         detail: { tags: ["Workout Exercises"], summary: "Create workout exercise" },
-      },
+      }
     )
     .get(
       "/",
@@ -112,7 +114,7 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
           500: tErrorResponse,
         },
         detail: { tags: ["Workout Exercises"], summary: "List workout exercises" },
-      },
+      }
     )
     .get(
       "/workout/:workoutId",
@@ -132,7 +134,7 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
           500: tErrorResponse,
         },
         detail: { tags: ["Workout Exercises"], summary: "Get exercises for a workout" },
-      },
+      }
     )
     .get(
       "/:id",
@@ -151,7 +153,7 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
           500: tErrorResponse,
         },
         detail: { tags: ["Workout Exercises"], summary: "Get workout exercise by ID" },
-      },
+      }
     )
     .put(
       "/:id",
@@ -177,7 +179,7 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
           500: tErrorResponse,
         },
         detail: { tags: ["Workout Exercises"], summary: "Update workout exercise" },
-      },
+      }
     )
     .delete(
       "/:id",
@@ -196,6 +198,6 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
           500: tErrorResponse,
         },
         detail: { tags: ["Workout Exercises"], summary: "Delete workout exercise" },
-      },
+      }
     );
 };

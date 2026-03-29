@@ -1,10 +1,12 @@
 import { describe, it, expect, mock, beforeEach } from "bun:test";
+import { ulid } from "ulidx";
+
 import { WorkoutService } from "../workout.service.mjs";
-import type { WorkoutRepository } from "../workout.repository.mjs";
 import { ok, err } from "../../../shared/types/index.mjs";
 import { AppError, NotFoundError } from "../../../shared/errors/index.mjs";
+
+import type { WorkoutRepository } from "../workout.repository.mjs";
 import type { IWorkout } from "../interfaces/index.mjs";
-import { ulid } from "ulidx";
 
 const makeWorkout = (overrides: Partial<IWorkout> = {}): IWorkout => ({
   id: ulid(),
@@ -12,8 +14,10 @@ const makeWorkout = (overrides: Partial<IWorkout> = {}): IWorkout => ({
   workoutType: "running",
   status: "planned",
   date: "2024-01-15",
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: new Date()
+.toISOString(),
+  updatedAt: new Date()
+.toISOString(),
   ...overrides,
 });
 
@@ -43,48 +47,60 @@ describe("WorkoutService", () => {
       date: "2024-01-15",
     };
     const result = await service.create(data);
-    expect(result.ok).toBe(true);
-    expect(mockRepo.create).toHaveBeenCalledTimes(1);
+    expect(result.ok)
+.toBe(true);
+    expect(mockRepo.create)
+.toHaveBeenCalledTimes(1);
   });
 
   it("should return list with count", async () => {
     const result = await service.findAll({ page: 1, limit: 20 });
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
     if (result.ok) {
-      expect(result.value.count).toBe(1);
-      expect(result.value.data.length).toBe(1);
+      expect(result.value.count)
+.toBe(1);
+      expect(result.value.data.length)
+.toBe(1);
     }
   });
 
   it("should return NotFoundError when workout not found by id", async () => {
     mockRepo.findById = mock(() => Promise.resolve(ok(null)));
     const result = await service.findById("nonexistent");
-    expect(result.ok).toBe(false);
+    expect(result.ok)
+.toBe(false);
     if (!result.ok) {
-      expect(result.error).toBeInstanceOf(NotFoundError);
+      expect(result.error)
+.toBeInstanceOf(NotFoundError);
     }
   });
 
   it("should propagate repository error on findById", async () => {
     mockRepo.findById = mock(() => Promise.resolve(err(new AppError("DB error", 500, "DB_ERROR"))));
     const result = await service.findById("id");
-    expect(result.ok).toBe(false);
+    expect(result.ok)
+.toBe(false);
     if (!result.ok) {
-      expect(result.error.message).toBe("DB error");
+      expect(result.error.message)
+.toBe("DB error");
     }
   });
 
   it("should return NotFoundError on update when not found", async () => {
     mockRepo.findById = mock(() => Promise.resolve(ok(null)));
     const result = await service.update("id", { name: "Updated" });
-    expect(result.ok).toBe(false);
+    expect(result.ok)
+.toBe(false);
     if (!result.ok) {
-      expect(result.error).toBeInstanceOf(NotFoundError);
+      expect(result.error)
+.toBeInstanceOf(NotFoundError);
     }
   });
 
   it("should delete workout successfully", async () => {
     const result = await service.delete("some-id");
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
   });
 });

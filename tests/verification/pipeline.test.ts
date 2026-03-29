@@ -105,7 +105,7 @@ describe("runVerificationPipeline", () => {
   it("respects skipSmoke=false and runs smoke gate", async () => {
     const result = await runVerificationPipeline(
       "/fake/project",
-      { maxRetries: 0, skipSmoke: false, endpoints: ["/healthz"] },
+      { maxRetries: 0, skipSmoke: false, endpoints: ["/health"] },
       ALL_PASSING_GATES
     );
 
@@ -116,7 +116,7 @@ describe("runVerificationPipeline", () => {
   it("returns passed=false when smoke gate fails", async () => {
     const result = await runVerificationPipeline(
       "/fake/project",
-      { maxRetries: 0, skipSmoke: false, endpoints: ["/healthz"] },
+      { maxRetries: 0, skipSmoke: false, endpoints: ["/health"] },
       { eslint: passingEslint, test: passingTest, smoke: failingSmoke }
     );
 

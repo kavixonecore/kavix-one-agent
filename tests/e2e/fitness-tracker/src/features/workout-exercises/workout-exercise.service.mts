@@ -1,9 +1,11 @@
 import { ulid } from "ulidx";
+
+import { ok, err } from "../../shared/types/index.mjs";
+import { NotFoundError, ValidationError } from "../../shared/errors/index.mjs";
+
 import type { IWorkoutExercise } from "./interfaces/index.mjs";
 import type { CreateWorkoutExercise, UpdateWorkoutExercise, WorkoutExerciseQuery } from "./types/index.mjs";
 import type { Result } from "../../shared/types/index.mjs";
-import { ok, err } from "../../shared/types/index.mjs";
-import { NotFoundError, ValidationError } from "../../shared/errors/index.mjs";
 import type { AppError } from "../../shared/errors/index.mjs";
 import type { WorkoutExerciseRepository } from "./workout-exercise.repository.mjs";
 import type { WorkoutService } from "../workouts/workout.service.mjs";
@@ -17,13 +19,15 @@ export interface IWorkoutExerciseListResult {
 export class WorkoutExerciseService {
 
   private readonly repository: WorkoutExerciseRepository;
+
   private readonly workoutService: WorkoutService;
+
   private readonly exerciseService: ExerciseService;
 
   public constructor(
     repository: WorkoutExerciseRepository,
     workoutService: WorkoutService,
-    exerciseService: ExerciseService,
+    exerciseService: ExerciseService
   ) {
     this.repository = repository;
     this.workoutService = workoutService;
@@ -43,19 +47,20 @@ export class WorkoutExerciseService {
       return err(new ValidationError(`Exercise with id '${data.exerciseId}' not found`));
     }
 
-    const now = new Date().toISOString();
+    const now = new Date()
+.toISOString();
     const workoutExercise: IWorkoutExercise = {
       id: ulid(),
       workoutId: data.workoutId,
       exerciseId: data.exerciseId,
       order: data.order,
-      sets: data.sets,
-      reps: data.reps,
-      weightLbs: data.weightLbs,
-      durationSeconds: data.durationSeconds,
-      restSeconds: data.restSeconds,
-      notes: data.notes,
-      userId: data.userId,
+      ...(data.sets !== undefined && { sets: data.sets }),
+      ...(data.reps !== undefined && { reps: data.reps }),
+      ...(data.weightLbs !== undefined && { weightLbs: data.weightLbs }),
+      ...(data.durationSeconds !== undefined && { durationSeconds: data.durationSeconds }),
+      ...(data.restSeconds !== undefined && { restSeconds: data.restSeconds }),
+      ...(data.notes !== undefined && { notes: data.notes }),
+      ...(data.userId !== undefined && { userId: data.userId }),
       createdAt: now,
       updatedAt: now,
     };

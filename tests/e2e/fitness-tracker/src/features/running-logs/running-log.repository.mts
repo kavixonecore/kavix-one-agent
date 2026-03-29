@@ -1,17 +1,19 @@
+import { ok, err } from "../../shared/types/index.mjs";
+import { AppError } from "../../shared/errors/index.mjs";
+import { logger } from "../../shared/logger.mjs";
+
 import type { MongoClient, Collection } from "mongodb";
 import type { IRunningLog } from "./interfaces/index.mjs";
 import type { UpdateRunningLog, RunningLogQuery, IPersonalBests } from "./types/index.mjs";
 import type { Result } from "../../shared/types/index.mjs";
-import { ok, err } from "../../shared/types/index.mjs";
-import { AppError } from "../../shared/errors/index.mjs";
-import { logger } from "../../shared/logger.mjs";
 
 export class RunningLogRepository {
 
   private readonly collection: Collection<IRunningLog>;
 
   public constructor(client: MongoClient, dbName: string) {
-    this.collection = client.db(dbName).collection<IRunningLog>("running_logs");
+    this.collection = client.db(dbName)
+.collection<IRunningLog>("running_logs");
   }
 
   public async create(log: IRunningLog): Promise<Result<IRunningLog, AppError>> {
@@ -27,11 +29,13 @@ export class RunningLogRepository {
   public async findAll(query: RunningLogQuery): Promise<Result<IRunningLog[], AppError>> {
     try {
       const filter: { workoutId?: string } = {};
-      if (query.workoutId) filter.workoutId = query.workoutId;
+      if (query.workoutId) {
+filter.workoutId = query.workoutId;
+}
 
       const skip = (query.page - 1) * query.limit;
       const docs = await this.collection
-        .find(filter)
+        .find(filter, { projection: { _id: 0 } })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(query.limit)
@@ -45,7 +49,7 @@ export class RunningLogRepository {
 
   public async findById(id: string): Promise<Result<IRunningLog | null, AppError>> {
     try {
-      const doc = await this.collection.findOne({ id });
+      const doc = await this.collection.findOne({ id }, { projection: { _id: 0 } });
       return ok(doc);
     } catch (error) {
       logger.error("RunningLogRepository.findById failed", { error });
@@ -55,7 +59,8 @@ export class RunningLogRepository {
 
   public async findByWorkoutId(workoutId: string): Promise<Result<IRunningLog[], AppError>> {
     try {
-      const docs = await this.collection.find({ workoutId }).toArray();
+      const docs = await this.collection.find({ workoutId }, { projection: { _id: 0 } })
+.toArray();
       return ok(docs);
     } catch (error) {
       logger.error("RunningLogRepository.findByWorkoutId failed", { error });
@@ -66,9 +71,18 @@ export class RunningLogRepository {
   public async getPersonalBests(): Promise<Result<IPersonalBests, AppError>> {
     try {
       const [fastestResult, longestDistResult, longestDurResult] = await Promise.all([
-        this.collection.find().sort({ paceMinutesPerMile: 1 }).limit(1).toArray(),
-        this.collection.find().sort({ distanceMiles: -1 }).limit(1).toArray(),
-        this.collection.find().sort({ durationMinutes: -1 }).limit(1).toArray(),
+        this.collection.find()
+.sort({ paceMinutesPerMile: 1 })
+.limit(1)
+.toArray(),
+        this.collection.find()
+.sort({ distanceMiles: -1 })
+.limit(1)
+.toArray(),
+        this.collection.find()
+.sort({ durationMinutes: -1 })
+.limit(1)
+.toArray(),
       ]);
 
       return ok({
@@ -85,21 +99,38 @@ export class RunningLogRepository {
   public async update(id: string, data: UpdateRunningLog): Promise<Result<IRunningLog | null, AppError>> {
     try {
       const updateData: Partial<IRunningLog> = {
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date()
+.toISOString(),
       };
-      if (data.distanceMiles !== undefined) updateData.distanceMiles = data.distanceMiles;
-      if (data.durationMinutes !== undefined) updateData.durationMinutes = data.durationMinutes;
-      if (data.paceMinutesPerMile !== undefined) updateData.paceMinutesPerMile = data.paceMinutesPerMile;
-      if (data.routeName !== undefined) updateData.routeName = data.routeName;
-      if (data.elevationGainFeet !== undefined) updateData.elevationGainFeet = data.elevationGainFeet;
-      if (data.heartRateAvg !== undefined) updateData.heartRateAvg = data.heartRateAvg;
-      if (data.weather !== undefined) updateData.weather = data.weather;
-      if (data.notes !== undefined) updateData.notes = data.notes;
+      if (data.distanceMiles !== undefined) {
+updateData.distanceMiles = data.distanceMiles;
+}
+      if (data.durationMinutes !== undefined) {
+updateData.durationMinutes = data.durationMinutes;
+}
+      if (data.paceMinutesPerMile !== undefined) {
+updateData.paceMinutesPerMile = data.paceMinutesPerMile;
+}
+      if (data.routeName !== undefined) {
+updateData.routeName = data.routeName;
+}
+      if (data.elevationGainFeet !== undefined) {
+updateData.elevationGainFeet = data.elevationGainFeet;
+}
+      if (data.heartRateAvg !== undefined) {
+updateData.heartRateAvg = data.heartRateAvg;
+}
+      if (data.weather !== undefined) {
+updateData.weather = data.weather;
+}
+      if (data.notes !== undefined) {
+updateData.notes = data.notes;
+}
 
       const result = await this.collection.findOneAndUpdate(
         { id },
         { $set: updateData },
-        { returnDocument: "after" },
+        { returnDocument: "after", projection: { _id: 0 } }
       );
       return ok(result);
     } catch (error) {
@@ -121,7 +152,9 @@ export class RunningLogRepository {
   public async count(query: Omit<RunningLogQuery, "page" | "limit">): Promise<Result<number, AppError>> {
     try {
       const filter: { workoutId?: string } = {};
-      if (query.workoutId) filter.workoutId = query.workoutId;
+      if (query.workoutId) {
+filter.workoutId = query.workoutId;
+}
       const total = await this.collection.countDocuments(filter);
       return ok(total);
     } catch (error) {

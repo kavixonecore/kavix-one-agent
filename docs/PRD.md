@@ -161,9 +161,14 @@ Existing code generators (Yeoman, Hygen, plop) produce flat scaffolds without un
 
 - [ ] **Must:** Generate test files alongside each feature using bun test (import { describe, it, expect } from 'bun:test')
 - [ ] **Must:** Follow TDD approach: generate test stubs first, then implement to pass
-- [ ] **Should:** Generate unit tests for services (mocked repositories)
-- [ ] **Should:** Generate integration tests for routes (in-memory or test database)
-- [ ] **Must:** Generate a docker-compose.yml with MongoDB service for smoke testing
+- [ ] **Must:** Generate unit tests for services (mocked repositories)
+- [ ] **Must:** Generate integration tests for every entity that hit real API endpoints via HTTP against Docker MongoDB — this is a hard rule, not optional. Each integration test must:
+  - Start Docker MongoDB + Elysia server
+  - Test full CRUD round-trip via fetch(): POST → GET → GET by ID → PUT → DELETE → verify deleted
+  - Test cross-entity flows (e.g., create parent entity, then create child referencing it)
+  - Test error cases: invalid body → 400, missing entity → 404, invalid foreign key → 400/404
+  - Integration test files: `__tests__/{entity}.integration.test.mts`
+- [ ] **Must:** Generate a docker-compose.yml with MongoDB service for smoke testing and integration tests
 - [ ] **Could:** Generate test fixtures and factories for common entity patterns
 
 ### 3.5 State Management (Long-Running Generation)

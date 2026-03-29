@@ -1,10 +1,12 @@
 import { ulid } from "ulidx";
+
+import { ok, err } from "../../shared/types/index.mjs";
+import { NotFoundError } from "../../shared/errors/index.mjs";
+
 import type { IExercise } from "./interfaces/index.mjs";
 import type { CreateExercise, UpdateExercise, ExerciseQuery } from "./types/index.mjs";
 import type { Result } from "../../shared/types/index.mjs";
-import { ok, err } from "../../shared/types/index.mjs";
 import type { AppError } from "../../shared/errors/index.mjs";
-import { NotFoundError } from "../../shared/errors/index.mjs";
 import type { ExerciseRepository } from "./exercise.repository.mjs";
 import type { MuscleGroupValue, DifficultyLevelValue } from "./exercise.constants.mjs";
 
@@ -22,7 +24,8 @@ export class ExerciseService {
   }
 
   public async create(data: CreateExercise): Promise<Result<IExercise, AppError>> {
-    const now = new Date().toISOString();
+    const now = new Date()
+.toISOString();
     const exercise: IExercise = {
       id: ulid(),
       name: data.name,
@@ -31,7 +34,7 @@ export class ExerciseService {
       difficultyLevel: data.difficultyLevel as DifficultyLevelValue,
       equipmentRequired: data.equipmentRequired,
       instructions: data.instructions,
-      userId: data.userId,
+      ...(data.userId !== undefined && { userId: data.userId }),
       createdAt: now,
       updatedAt: now,
     };

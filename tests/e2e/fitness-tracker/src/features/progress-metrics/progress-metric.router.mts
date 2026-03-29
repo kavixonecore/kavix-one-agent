@@ -1,10 +1,12 @@
 import { Elysia, t } from "elysia";
-import type { ProgressMetricService } from "./progress-metric.service.mjs";
-import type { Logger } from "winston";
+
 import { createProgressMetricSchema } from "./schemas/create-progress-metric.schema.mjs";
 import { updateProgressMetricSchema } from "./schemas/update-progress-metric.schema.mjs";
 import { progressMetricQuerySchema, metricTypeParamsSchema } from "./schemas/progress-metric-query.schema.mjs";
 import { AppError } from "../../shared/errors/index.mjs";
+
+import type { Logger } from "winston";
+import type { ProgressMetricService } from "./progress-metric.service.mjs";
 
 const tMetricTypeUnion = t.Union([
   t.Literal("weight_lbs"),
@@ -98,7 +100,7 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
           500: tErrorResponse,
         },
         detail: { tags: ["Progress Metrics"], summary: "Create progress metric" },
-      },
+      }
     )
     .get(
       "/",
@@ -123,7 +125,7 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
           500: tErrorResponse,
         },
         detail: { tags: ["Progress Metrics"], summary: "List progress metrics" },
-      },
+      }
     )
     .get(
       "/latest",
@@ -142,7 +144,7 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
           500: tErrorResponse,
         },
         detail: { tags: ["Progress Metrics"], summary: "Get latest metric of each type" },
-      },
+      }
     )
     .get(
       "/by-type/:metricType",
@@ -155,7 +157,7 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
         const result = await service.findByMetricType(
           parsedParams.data.metricType,
           (query as { startDate?: string }).startDate,
-          (query as { endDate?: string }).endDate,
+          (query as { endDate?: string }).endDate
         );
         if (!result.ok) {
           set.status = result.error instanceof AppError ? result.error.statusCode : 500;
@@ -171,7 +173,7 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
           500: tErrorResponse,
         },
         detail: { tags: ["Progress Metrics"], summary: "Get metrics by type" },
-      },
+      }
     )
     .get(
       "/:id",
@@ -190,7 +192,7 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
           500: tErrorResponse,
         },
         detail: { tags: ["Progress Metrics"], summary: "Get progress metric by ID" },
-      },
+      }
     )
     .put(
       "/:id",
@@ -216,7 +218,7 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
           500: tErrorResponse,
         },
         detail: { tags: ["Progress Metrics"], summary: "Update progress metric" },
-      },
+      }
     )
     .delete(
       "/:id",
@@ -235,6 +237,6 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
           500: tErrorResponse,
         },
         detail: { tags: ["Progress Metrics"], summary: "Delete progress metric" },
-      },
+      }
     );
 };

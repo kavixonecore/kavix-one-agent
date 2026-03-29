@@ -1,10 +1,12 @@
 import { Elysia, t } from "elysia";
-import type { WorkoutService } from "./workout.service.mjs";
-import type { Logger } from "winston";
+
 import { createWorkoutSchema } from "./schemas/create-workout.schema.mjs";
 import { updateWorkoutSchema } from "./schemas/update-workout.schema.mjs";
 import { workoutQuerySchema } from "./schemas/workout-query.schema.mjs";
 import { AppError } from "../../shared/errors/index.mjs";
+
+import type { Logger } from "winston";
+import type { WorkoutService } from "./workout.service.mjs";
 
 const tWorkoutTypeUnion = t.Union([
   t.Literal("running"),
@@ -106,7 +108,7 @@ export const createWorkoutRouter = (loggerInstance: Logger, service: WorkoutServ
           500: tErrorResponse,
         },
         detail: { tags: ["Workouts"], summary: "Create workout" },
-      },
+      }
     )
     .get(
       "/",
@@ -131,7 +133,7 @@ export const createWorkoutRouter = (loggerInstance: Logger, service: WorkoutServ
           500: tErrorResponse,
         },
         detail: { tags: ["Workouts"], summary: "List workouts with optional date range filter" },
-      },
+      }
     )
     .get(
       "/:id",
@@ -151,7 +153,7 @@ export const createWorkoutRouter = (loggerInstance: Logger, service: WorkoutServ
           500: tErrorResponse,
         },
         detail: { tags: ["Workouts"], summary: "Get workout by ID" },
-      },
+      }
     )
     .put(
       "/:id",
@@ -177,7 +179,7 @@ export const createWorkoutRouter = (loggerInstance: Logger, service: WorkoutServ
           500: tErrorResponse,
         },
         detail: { tags: ["Workouts"], summary: "Update workout" },
-      },
+      }
     )
     .delete(
       "/:id",
@@ -196,6 +198,6 @@ export const createWorkoutRouter = (loggerInstance: Logger, service: WorkoutServ
           500: tErrorResponse,
         },
         detail: { tags: ["Workouts"], summary: "Delete workout" },
-      },
+      }
     );
 };

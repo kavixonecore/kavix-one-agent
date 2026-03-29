@@ -24,7 +24,7 @@
   "/progress-metrics": { "target": "http://localhost:3000", "secure": false },
   "/running-logs": { "target": "http://localhost:3000", "secure": false },
   "/workout-exercises": { "target": "http://localhost:3000", "secure": false },
-  "/healthz": { "target": "http://localhost:3000", "secure": false },
+  "/health": { "target": "http://localhost:3000", "secure": false },
   "/version": { "target": "http://localhost:3000", "secure": false }
 }
 ```
@@ -357,3 +357,37 @@ bun src/index.mts
 cd tests/e2e/fitness-tracker/ui
 ng serve --proxy-config proxy.conf.json
 ```
+
+---
+
+## Known Bugs Fixed (Discovered via Integration Testing)
+
+### MongoDB `_id` Leaking into HTTP Responses (Fixed 2026-03-29)
+
+**Symptom:** All GET and PUT endpoints (routes that read from MongoDB) were returning HTTP 400 with `{ success: false, error: "Validation error" }` instead of the expected 200 response.
+
+**Root cause:** MongoDB's Node.js driver adds an `_id` field (ObjectId) to every document returned by `findOne`, `find().toArray()`, and `findOneAndUpdate()`. Elysia's TypeBox response validator enforces strict schemas — any extra property not declared in the response schema causes a VALIDATION error, which the `onError` handler catches and returns as 400.
+
+**Fix:** Added `{ projection: { _id: 0 } }` to all MongoDB read operations across all 5 repositories (`exercise`, `workout`, `progress-metric`, `running-log`, `workout-exercise`). For aggregate pipelines (progress-metric `getLatest`), added `{ $project: { _id: 0 } }` stage.
+
+**Affected files:**
+- `src/features/exercises/exercise.repository.mts`
+- `src/features/workouts/workout.repository.mts`
+- `src/features/progress-metrics/progress-metric.repository.mts`
+- `src/features/running-logs/running-log.repository.mts`
+- `src/features/workout-exercises/workout-exercise.repository.mts`
+
+### `null` Optional Fields Breaking Response Validation (Fixed 2026-03-29)
+
+**Symptom:** After inserting documents with optional fields absent (e.g., no `userId`), MongoDB stored them as `null`. Elysia's TypeBox `t.Optional(t.String())` accepts `undefined` but NOT `null`, causing response validation to fail.
+
+**Root cause:** All services passed optional fields directly from input data (e.g., `userId: data.userId`). When `data.userId` is `undefined`, the MongoDB BSON driver serializes `undefined` to `null` in the database. On retrieval, `null` fields fail `t.Optional(t.String())` TypeBox validation.
+
+**Fix:** Updated all 5 services to use conditional spread (`...(data.field !== undefined && { field: data.field })`) for all optional fields, ensuring `undefined` values are never stored in MongoDB.
+
+**Affected files:**
+- `src/features/exercises/exercise.service.mts`
+- `src/features/workouts/workout.service.mts`
+- `src/features/progress-metrics/progress-metric.service.mts`
+- `src/features/running-logs/running-log.service.mts`
+- `src/features/workout-exercises/workout-exercise.service.mts`

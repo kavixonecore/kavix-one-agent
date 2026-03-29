@@ -47,7 +47,7 @@ Open **http://localhost:3000/docs** in your browser.
 ### 6. Health check
 
 ```bash
-curl http://localhost:3000/healthz
+curl http://localhost:3000/health
 # { "status": "ok", "timestamp": "...", "uptime": 0 }
 ```
 
@@ -77,7 +77,7 @@ MONGODB_URI=mongodb://admin:password@localhost:27017/fitness_tracker_test?authSo
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | /healthz | Health check |
+| GET | /health | Health check |
 | GET | /version | API version info |
 | POST | /exercises | Create exercise |
 | GET | /exercises | List exercises (paginated, filterable) |

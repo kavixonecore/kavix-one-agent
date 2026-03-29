@@ -1,10 +1,12 @@
 import { describe, it, expect, mock, beforeEach } from "bun:test";
+import { ulid } from "ulidx";
+
 import { ProgressMetricService } from "../progress-metric.service.mjs";
-import type { ProgressMetricRepository } from "../progress-metric.repository.mjs";
 import { ok, err } from "../../../shared/types/index.mjs";
 import { AppError, NotFoundError, ValidationError } from "../../../shared/errors/index.mjs";
+
+import type { ProgressMetricRepository } from "../progress-metric.repository.mjs";
 import type { IProgressMetric } from "../interfaces/index.mjs";
-import { ulid } from "ulidx";
 
 const makeMetric = (overrides: Partial<IProgressMetric> = {}): IProgressMetric => ({
   id: ulid(),
@@ -12,8 +14,10 @@ const makeMetric = (overrides: Partial<IProgressMetric> = {}): IProgressMetric =
   value: 185,
   unit: "lbs",
   date: "2024-01-15",
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: new Date()
+.toISOString(),
+  updatedAt: new Date()
+.toISOString(),
   ...overrides,
 });
 
@@ -44,7 +48,8 @@ describe("ProgressMetricService", () => {
       unit: "lbs",
       date: "2024-01-15",
     });
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
   });
 
   it("should return ValidationError when custom metric has no name", async () => {
@@ -54,9 +59,11 @@ describe("ProgressMetricService", () => {
       unit: "reps",
       date: "2024-01-15",
     });
-    expect(result.ok).toBe(false);
+    expect(result.ok)
+.toBe(false);
     if (!result.ok) {
-      expect(result.error).toBeInstanceOf(ValidationError);
+      expect(result.error)
+.toBeInstanceOf(ValidationError);
     }
   });
 
@@ -68,32 +75,39 @@ describe("ProgressMetricService", () => {
       date: "2024-01-15",
       customMetricName: "Pull-ups",
     });
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
   });
 
   it("should get latest metrics", async () => {
     const result = await service.getLatest();
-    expect(result.ok).toBe(true);
-    expect(mockRepo.getLatest).toHaveBeenCalledTimes(1);
+    expect(result.ok)
+.toBe(true);
+    expect(mockRepo.getLatest)
+.toHaveBeenCalledTimes(1);
   });
 
   it("should find by metric type", async () => {
     const result = await service.findByMetricType("weight_lbs");
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
   });
 
   it("should return NotFoundError when metric not found", async () => {
     mockRepo.findById = mock(() => Promise.resolve(ok(null)));
     const result = await service.findById("nonexistent");
-    expect(result.ok).toBe(false);
+    expect(result.ok)
+.toBe(false);
     if (!result.ok) {
-      expect(result.error).toBeInstanceOf(NotFoundError);
+      expect(result.error)
+.toBeInstanceOf(NotFoundError);
     }
   });
 
   it("should propagate repository error", async () => {
     mockRepo.findById = mock(() => Promise.resolve(err(new AppError("DB error", 500, "DB_ERROR"))));
     const result = await service.findById("id");
-    expect(result.ok).toBe(false);
+    expect(result.ok)
+.toBe(false);
   });
 });

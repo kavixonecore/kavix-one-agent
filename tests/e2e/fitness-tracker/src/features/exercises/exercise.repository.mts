@@ -1,10 +1,11 @@
+import { ok, err } from "../../shared/types/index.mjs";
+import { AppError } from "../../shared/errors/index.mjs";
+import { logger } from "../../shared/logger.mjs";
+
 import type { MongoClient, Collection } from "mongodb";
 import type { IExercise } from "./interfaces/index.mjs";
 import type { UpdateExercise, ExerciseQuery } from "./types/index.mjs";
 import type { Result } from "../../shared/types/index.mjs";
-import { ok, err } from "../../shared/types/index.mjs";
-import { AppError } from "../../shared/errors/index.mjs";
-import { logger } from "../../shared/logger.mjs";
 import type { MuscleGroupValue } from "./exercise.constants.mjs";
 
 export class ExerciseRepository {
@@ -12,7 +13,8 @@ export class ExerciseRepository {
   private readonly collection: Collection<IExercise>;
 
   public constructor(client: MongoClient, dbName: string) {
-    this.collection = client.db(dbName).collection<IExercise>("exercises");
+    this.collection = client.db(dbName)
+.collection<IExercise>("exercises");
   }
 
   public async create(exercise: IExercise): Promise<Result<IExercise, AppError>> {
@@ -36,7 +38,7 @@ export class ExerciseRepository {
       }
       const skip = (query.page - 1) * query.limit;
       const docs = await this.collection
-        .find(filter)
+        .find(filter, { projection: { _id: 0 } })
         .skip(skip)
         .limit(query.limit)
         .toArray();
@@ -49,7 +51,7 @@ export class ExerciseRepository {
 
   public async findById(id: string): Promise<Result<IExercise | null, AppError>> {
     try {
-      const doc = await this.collection.findOne({ id });
+      const doc = await this.collection.findOne({ id }, { projection: { _id: 0 } });
       return ok(doc);
     } catch (error) {
       logger.error("ExerciseRepository.findById failed", { error });
@@ -60,19 +62,32 @@ export class ExerciseRepository {
   public async update(id: string, data: UpdateExercise): Promise<Result<IExercise | null, AppError>> {
     try {
       const updateData: Partial<IExercise> = {
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date()
+.toISOString(),
       };
-      if (data.name !== undefined) updateData.name = data.name;
-      if (data.description !== undefined) updateData.description = data.description;
-      if (data.muscleGroup !== undefined) updateData.muscleGroup = data.muscleGroup as MuscleGroupValue;
-      if (data.difficultyLevel !== undefined) updateData.difficultyLevel = data.difficultyLevel as IExercise["difficultyLevel"];
-      if (data.equipmentRequired !== undefined) updateData.equipmentRequired = data.equipmentRequired;
-      if (data.instructions !== undefined) updateData.instructions = data.instructions;
+      if (data.name !== undefined) {
+updateData.name = data.name;
+}
+      if (data.description !== undefined) {
+updateData.description = data.description;
+}
+      if (data.muscleGroup !== undefined) {
+updateData.muscleGroup = data.muscleGroup as MuscleGroupValue;
+}
+      if (data.difficultyLevel !== undefined) {
+updateData.difficultyLevel = data.difficultyLevel as IExercise["difficultyLevel"];
+}
+      if (data.equipmentRequired !== undefined) {
+updateData.equipmentRequired = data.equipmentRequired;
+}
+      if (data.instructions !== undefined) {
+updateData.instructions = data.instructions;
+}
 
       const result = await this.collection.findOneAndUpdate(
         { id },
         { $set: updateData },
-        { returnDocument: "after" },
+        { returnDocument: "after", projection: { _id: 0 } }
       );
       return ok(result);
     } catch (error) {

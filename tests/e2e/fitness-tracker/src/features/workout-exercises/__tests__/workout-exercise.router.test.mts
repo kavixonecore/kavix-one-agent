@@ -1,12 +1,14 @@
 import { describe, it, expect, mock, beforeEach } from "bun:test";
 import { Elysia } from "elysia";
-import { createWorkoutExerciseRouter } from "../workout-exercise.router.mjs";
-import type { WorkoutExerciseService } from "../workout-exercise.service.mjs";
-import { ok, err } from "../../../shared/types/index.mjs";
-import { NotFoundError } from "../../../shared/errors/index.mjs";
-import type { IWorkoutExercise } from "../interfaces/index.mjs";
 import { ulid } from "ulidx";
 import winston from "winston";
+
+import { createWorkoutExerciseRouter } from "../workout-exercise.router.mjs";
+import { ok, err } from "../../../shared/types/index.mjs";
+import { NotFoundError } from "../../../shared/errors/index.mjs";
+
+import type { WorkoutExerciseService } from "../workout-exercise.service.mjs";
+import type { IWorkoutExercise } from "../interfaces/index.mjs";
 
 const testLogger = winston.createLogger({ silent: true });
 
@@ -15,8 +17,10 @@ const makeWorkoutExercise = (): IWorkoutExercise => ({
   workoutId: "workout-1",
   exerciseId: "exercise-1",
   order: 1,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  createdAt: new Date()
+.toISOString(),
+  updatedAt: new Date()
+.toISOString(),
 });
 
 const makeMockService = (): WorkoutExerciseService => ({
@@ -29,7 +33,8 @@ const makeMockService = (): WorkoutExerciseService => ({
 } as unknown as WorkoutExerciseService);
 
 const buildApp = (service: WorkoutExerciseService): Elysia => {
-  return new Elysia().use(createWorkoutExerciseRouter(testLogger, service)) as unknown as Elysia;
+  return new Elysia()
+.use(createWorkoutExerciseRouter(testLogger, service)) as unknown as Elysia;
 };
 
 describe("WorkoutExerciseRouter", () => {
@@ -51,11 +56,13 @@ describe("WorkoutExerciseRouter", () => {
           exerciseId: "exercise-1",
           order: 1,
         }),
-      }),
+      })
     );
-    expect(res.status).toBe(201);
+    expect(res.status)
+.toBe(201);
     const body = await res.json() as { success: boolean };
-    expect(body.success).toBe(true);
+    expect(body.success)
+.toBe(true);
   });
 
   it("POST /workout-exercises should return 400 on validation error", async () => {
@@ -64,32 +71,40 @@ describe("WorkoutExerciseRouter", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workoutId: "" }),
-      }),
+      })
     );
-    expect(res.status).toBe(400);
+    expect(res.status)
+.toBe(400);
   });
 
   it("GET /workout-exercises should return list", async () => {
     const res = await app.handle(new Request("http://localhost/workout-exercises"));
-    expect(res.status).toBe(200);
+    expect(res.status)
+.toBe(200);
     const body = await res.json() as { success: boolean; count: number };
-    expect(body.success).toBe(true);
-    expect(body.count).toBe(1);
+    expect(body.success)
+.toBe(true);
+    expect(body.count)
+.toBe(1);
   });
 
   it("GET /workout-exercises/workout/:workoutId should return exercises", async () => {
     const res = await app.handle(new Request("http://localhost/workout-exercises/workout/workout-1"));
-    expect(res.status).toBe(200);
+    expect(res.status)
+.toBe(200);
     const body = await res.json() as { success: boolean; count: number };
-    expect(body.success).toBe(true);
-    expect(body.count).toBe(1);
+    expect(body.success)
+.toBe(true);
+    expect(body.count)
+.toBe(1);
   });
 
   it("GET /workout-exercises/:id should return 404 when not found", async () => {
     mockService.findById = mock(() => Promise.resolve(err(new NotFoundError("WorkoutExercise", "id"))));
     app = buildApp(mockService);
     const res = await app.handle(new Request("http://localhost/workout-exercises/nonexistent"));
-    expect(res.status).toBe(404);
+    expect(res.status)
+.toBe(404);
   });
 
   it("PUT /workout-exercises/:id should update", async () => {
@@ -98,15 +113,17 @@ describe("WorkoutExerciseRouter", () => {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ order: 2 }),
-      }),
+      })
     );
-    expect(res.status).toBe(200);
+    expect(res.status)
+.toBe(200);
   });
 
   it("DELETE /workout-exercises/:id should delete", async () => {
     const res = await app.handle(
-      new Request("http://localhost/workout-exercises/some-id", { method: "DELETE" }),
+      new Request("http://localhost/workout-exercises/some-id", { method: "DELETE" })
     );
-    expect(res.status).toBe(200);
+    expect(res.status)
+.toBe(200);
   });
 });

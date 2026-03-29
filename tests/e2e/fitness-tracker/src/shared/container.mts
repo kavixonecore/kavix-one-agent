@@ -1,4 +1,3 @@
-import type { MongoClient } from "mongodb";
 import { getMongoClient } from "./database.mjs";
 import { logger } from "./logger.mjs";
 import { ExerciseRepository } from "../features/exercises/exercise.repository.mjs";
@@ -11,6 +10,8 @@ import { RunningLogRepository } from "../features/running-logs/running-log.repos
 import { RunningLogService } from "../features/running-logs/running-log.service.mjs";
 import { WorkoutExerciseRepository } from "../features/workout-exercises/workout-exercise.repository.mjs";
 import { WorkoutExerciseService } from "../features/workout-exercises/workout-exercise.service.mjs";
+
+import type { MongoClient } from "mongodb";
 
 export interface IAppContainer {
   db: MongoClient;
@@ -55,7 +56,7 @@ export const getContainer = async (): Promise<IAppContainer> => {
   const workoutExerciseService = new WorkoutExerciseService(
     workoutExerciseRepository,
     workoutService,
-    exerciseService,
+    exerciseService
   );
 
   container = {

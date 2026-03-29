@@ -1,4 +1,5 @@
 import { MongoClient } from "mongodb";
+
 import { logger } from "./logger.mjs";
 
 let client: MongoClient | null = null;

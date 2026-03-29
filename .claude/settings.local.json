@@ -41,7 +41,18 @@
       "Bash(python3 -m json.tool)",
       "Bash(find /c/projects/kavix-one/agent-one/tests/e2e/fitness-tracker/src/features/running-logs/types/ -name *.mts)",
       "Bash(xargs cat:*)",
-      "mcp__plugin_playwright_playwright__browser_click"
+      "mcp__plugin_playwright_playwright__browser_click",
+      "Bash(MONGODB_URI=mongodb://localhost:27017 bun test src/__tests__/ --timeout 30000)",
+      "Bash(MONGODB_URI=\"mongodb://admin:password@localhost:27017/fitness_tracker?authSource=admin\" bun test src/__tests__/ --timeout 30000)",
+      "Bash(MONGODB_URI=\"mongodb://admin:password@localhost:27017/fitness_tracker?authSource=admin\" bun -e \":*)",
+      "Bash(MONGODB_URI=\"mongodb://admin:password@localhost:27017/fitness_tracker?authSource=admin\" bun test src/__tests__/exercises.integration.test.mts --timeout 30000)",
+      "Bash(MONGODB_URI=\"mongodb://admin:password@localhost:27017/fitness_tracker?authSource=admin\" bun test src/features/exercises/__tests__/exercise.router.test.mts --timeout 30000)",
+      "Bash(MONGODB_URI=\"mongodb://admin:password@localhost:27017/fitness_tracker?authSource=admin\" bun test src/__tests__/exercises.integration.test.mts src/__tests__/workouts.integration.test.mts --timeout 30000)",
+      "Bash(MONGODB_URI=\"mongodb://admin:password@localhost:27017/fitness_tracker?authSource=admin\" NODE_ENV=test bun -e \":*)",
+      "Bash(MONGODB_URI=\"mongodb://admin:password@localhost:27017/fitness_tracker?authSource=admin\" bun test --timeout 30000)",
+      "Bash(while read:*)",
+      "Bash(do sed:*)",
+      "Bash(echo \"Fixed: $f\")"
     ]
   }
 }

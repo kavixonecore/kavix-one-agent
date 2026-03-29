@@ -299,7 +299,7 @@ export class ${pascalName}Stack extends cdk.Stack {
       desiredCount: environment === "prod" ? 2 : 1,
     });
 
-    this.service.targetGroup.configureHealthCheck({ path: "/healthz" });
+    this.service.targetGroup.configureHealthCheck({ path: "/health" });
 
     // ---------------------------------------------------------------------------
     // Stack Outputs

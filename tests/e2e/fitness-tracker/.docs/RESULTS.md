@@ -37,7 +37,7 @@
 - Page title: "Fitness Tracker API"
 - Version: v1.0.0 (OAS 3.0.3)
 - All 6 endpoint groups visible in sidebar:
-  - Health (GET /healthz, GET /version)
+  - Health (GET /health, GET /version)
   - Exercises (POST, GET, GET/:id, PUT/:id, DELETE/:id)
   - Workouts (POST, GET, GET/:id, PUT/:id, DELETE/:id)
   - Progress Metrics (POST, GET, GET/latest, GET/by-type/:type, GET/:id, PUT/:id, DELETE/:id)
@@ -55,7 +55,7 @@
 ### Health Check
 
 ```
-GET http://localhost:3000/healthz
+GET http://localhost:3000/health
 Response: { "status": "ok", "timestamp": "2026-03-29T15:20:11.486Z", "uptime": 2 }
 Status: 200
 ```
@@ -87,7 +87,7 @@ Status: 200
 - [x] All 92 tests pass (bun test)
 - [x] ESLint clean (0 errors, 0 warnings)
 - [x] Docker MongoDB accessible
-- [x] API starts and responds to /healthz
+- [x] API starts and responds to /health
 - [x] Swagger UI loads at /swagger
 - [x] All 6 endpoint groups visible
 - [x] Screenshot captured and saved

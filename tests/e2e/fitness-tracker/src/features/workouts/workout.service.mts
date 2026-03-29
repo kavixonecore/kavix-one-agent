@@ -1,9 +1,11 @@
 import { ulid } from "ulidx";
+
+import { ok, err } from "../../shared/types/index.mjs";
+import { NotFoundError } from "../../shared/errors/index.mjs";
+
 import type { IWorkout } from "./interfaces/index.mjs";
 import type { CreateWorkout, UpdateWorkout, WorkoutQuery } from "./types/index.mjs";
 import type { Result } from "../../shared/types/index.mjs";
-import { ok, err } from "../../shared/types/index.mjs";
-import { NotFoundError } from "../../shared/errors/index.mjs";
 import type { AppError } from "../../shared/errors/index.mjs";
 import type { WorkoutRepository } from "./workout.repository.mjs";
 import type { WorkoutTypeValue, WorkoutStatusValue } from "./workout.constants.mjs";
@@ -22,16 +24,17 @@ export class WorkoutService {
   }
 
   public async create(data: CreateWorkout): Promise<Result<IWorkout, AppError>> {
-    const now = new Date().toISOString();
+    const now = new Date()
+.toISOString();
     const workout: IWorkout = {
       id: ulid(),
       name: data.name,
       workoutType: data.workoutType as WorkoutTypeValue,
       status: data.status as WorkoutStatusValue,
       date: data.date,
-      durationMinutes: data.durationMinutes,
-      notes: data.notes,
-      userId: data.userId,
+      ...(data.durationMinutes !== undefined && { durationMinutes: data.durationMinutes }),
+      ...(data.notes !== undefined && { notes: data.notes }),
+      ...(data.userId !== undefined && { userId: data.userId }),
       createdAt: now,
       updatedAt: now,
     };

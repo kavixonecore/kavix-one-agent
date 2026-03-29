@@ -23,7 +23,7 @@
 ### Verification Pipeline (`src/verification/`)
 - `eslint-gate.mts` — runs `eslint --fix` then checks for remaining errors using `Bun.spawn`, parses compact format output to separate errors from warnings
 - `test-gate.mts` — runs `bun test`, parses pass/fail counts from output, returns `IVerificationResult & { details: ITestCounts }`
-- `smoke-gate.mts` — starts docker-compose, waits for server readiness by polling `/healthz`, hits each endpoint, always tears down even on failure
+- `smoke-gate.mts` — starts docker-compose, waits for server readiness by polling `/health`, hits each endpoint, always tears down even on failure
 - `pipeline.mts` — orchestrates eslint → test → smoke in sequence with retry logic; accepts injectable gate functions (`IVerificationGates`) for testability; tracks last failure result across retries
 - `interfaces/i-verification-options.mts` — configurable `maxRetries`, `skipSmoke`, `endpoints`
 - `index.mts` — barrel export

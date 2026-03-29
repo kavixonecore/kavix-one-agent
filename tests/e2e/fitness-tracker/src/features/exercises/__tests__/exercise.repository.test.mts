@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "bun:test";
 import { MongoClient } from "mongodb";
-import { ExerciseRepository } from "../exercise.repository.mjs";
-import type { IExercise } from "../interfaces/index.mjs";
 import { ulid } from "ulidx";
+
+import { ExerciseRepository } from "../exercise.repository.mjs";
+
+import type { IExercise } from "../interfaces/index.mjs";
 
 const MONGO_URI = process.env["MONGODB_URI"] ?? "mongodb://admin:password@localhost:27017/fitness_tracker_test?authSource=admin";
 const DB_NAME = "fitness_tracker_test";
@@ -18,12 +20,16 @@ describe("ExerciseRepository", () => {
   });
 
   afterAll(async () => {
-    await client.db(DB_NAME).collection("exercises").deleteMany({});
+    await client.db(DB_NAME)
+.collection("exercises")
+.deleteMany({});
     await client.close();
   });
 
   beforeEach(async () => {
-    await client.db(DB_NAME).collection("exercises").deleteMany({});
+    await client.db(DB_NAME)
+.collection("exercises")
+.deleteMany({});
   });
 
   const makeExercise = (overrides: Partial<IExercise> = {}): IExercise => ({
@@ -34,18 +40,23 @@ describe("ExerciseRepository", () => {
     difficultyLevel: "intermediate",
     equipmentRequired: ["barbell", "bench"],
     instructions: "Lie on bench and press",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: new Date()
+.toISOString(),
+    updatedAt: new Date()
+.toISOString(),
     ...overrides,
   });
 
   it("should create an exercise", async () => {
     const exercise = makeExercise();
     const result = await repository.create(exercise);
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
     if (result.ok) {
-      expect(result.value.id).toBe(exercise.id);
-      expect(result.value.name).toBe("Bench Press");
+      expect(result.value.id)
+.toBe(exercise.id);
+      expect(result.value.name)
+.toBe("Bench Press");
     }
   });
 
@@ -53,9 +64,11 @@ describe("ExerciseRepository", () => {
     await repository.create(makeExercise({ id: ulid(), name: "Squat", muscleGroup: "legs" }));
     await repository.create(makeExercise({ id: ulid(), name: "Deadlift", muscleGroup: "back" }));
     const result = await repository.findAll({ page: 1, limit: 20 });
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
     if (result.ok) {
-      expect(result.value.length).toBe(2);
+      expect(result.value.length)
+.toBe(2);
     }
   });
 
@@ -63,9 +76,11 @@ describe("ExerciseRepository", () => {
     await repository.create(makeExercise({ id: ulid(), muscleGroup: "chest" }));
     await repository.create(makeExercise({ id: ulid(), name: "Squat", muscleGroup: "legs" }));
     const result = await repository.findAll({ muscleGroup: "chest", page: 1, limit: 20 });
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
     if (result.ok) {
-      expect(result.value.length).toBe(1);
+      expect(result.value.length)
+.toBe(1);
     }
   });
 
@@ -73,17 +88,21 @@ describe("ExerciseRepository", () => {
     const exercise = makeExercise();
     await repository.create(exercise);
     const result = await repository.findById(exercise.id);
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
     if (result.ok) {
-      expect(result.value?.id).toBe(exercise.id);
+      expect(result.value?.id)
+.toBe(exercise.id);
     }
   });
 
   it("should return null for nonexistent id", async () => {
     const result = await repository.findById("nonexistent");
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
     if (result.ok) {
-      expect(result.value).toBeNull();
+      expect(result.value)
+.toBeNull();
     }
   });
 
@@ -91,9 +110,11 @@ describe("ExerciseRepository", () => {
     const exercise = makeExercise();
     await repository.create(exercise);
     const result = await repository.update(exercise.id, { name: "Updated Name" });
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
     if (result.ok) {
-      expect(result.value?.name).toBe("Updated Name");
+      expect(result.value?.name)
+.toBe("Updated Name");
     }
   });
 
@@ -101,13 +122,16 @@ describe("ExerciseRepository", () => {
     const exercise = makeExercise();
     await repository.create(exercise);
     const result = await repository.delete(exercise.id);
-    expect(result.ok).toBe(true);
+    expect(result.ok)
+.toBe(true);
     if (result.ok) {
-      expect(result.value).toBe(true);
+      expect(result.value)
+.toBe(true);
     }
     const findResult = await repository.findById(exercise.id);
     if (findResult.ok) {
-      expect(findResult.value).toBeNull();
+      expect(findResult.value)
+.toBeNull();
     }
   });
 });

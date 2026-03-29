@@ -1,12 +1,14 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
+
 import { createTracePlugin, logger } from "./shared/logger.mjs";
 import { createExerciseRouter } from "./features/exercises/exercise.router.mjs";
 import { createWorkoutRouter } from "./features/workouts/workout.router.mjs";
 import { createProgressMetricRouter } from "./features/progress-metrics/progress-metric.router.mjs";
 import { createRunningLogRouter } from "./features/running-logs/running-log.router.mjs";
 import { createWorkoutExerciseRouter } from "./features/workout-exercises/workout-exercise.router.mjs";
+
 import type { IAppContainer } from "./shared/container.mjs";
 
 const startTime = Date.now();
@@ -21,7 +23,7 @@ export const createApp = (container?: IAppContainer): Elysia => {
       origin: ["http://localhost:4200"],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
-    }),
+    })
   );
 
   app.use(
@@ -41,14 +43,15 @@ export const createApp = (container?: IAppContainer): Elysia => {
           { name: "Workout Exercises", description: "Exercise-workout linking" },
         ],
       },
-    }),
+    })
   );
 
   app.get(
-    "/healthz",
+    "/health",
     () => ({
       status: "ok",
-      timestamp: new Date().toISOString(),
+      timestamp: new Date()
+.toISOString(),
       uptime: Math.floor((Date.now() - startTime) / 1000),
     }),
     {
@@ -57,7 +60,7 @@ export const createApp = (container?: IAppContainer): Elysia => {
         summary: "Health check",
         description: "Returns server health status",
       },
-    },
+    }
   );
 
   app.get(
@@ -72,7 +75,7 @@ export const createApp = (container?: IAppContainer): Elysia => {
         summary: "Version info",
         description: "Returns the API version and environment",
       },
-    },
+    }
   );
 
   if (container) {

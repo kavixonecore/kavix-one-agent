@@ -1,10 +1,11 @@
+import { ok, err } from "../../shared/types/index.mjs";
+import { AppError } from "../../shared/errors/index.mjs";
+import { logger } from "../../shared/logger.mjs";
+
 import type { MongoClient, Collection } from "mongodb";
 import type { IWorkout } from "./interfaces/index.mjs";
 import type { UpdateWorkout, WorkoutQuery } from "./types/index.mjs";
 import type { Result } from "../../shared/types/index.mjs";
-import { ok, err } from "../../shared/types/index.mjs";
-import { AppError } from "../../shared/errors/index.mjs";
-import { logger } from "../../shared/logger.mjs";
 import type { WorkoutTypeValue, WorkoutStatusValue } from "./workout.constants.mjs";
 
 export class WorkoutRepository {
@@ -12,7 +13,8 @@ export class WorkoutRepository {
   private readonly collection: Collection<IWorkout>;
 
   public constructor(client: MongoClient, dbName: string) {
-    this.collection = client.db(dbName).collection<IWorkout>("workouts");
+    this.collection = client.db(dbName)
+.collection<IWorkout>("workouts");
   }
 
   public async create(workout: IWorkout): Promise<Result<IWorkout, AppError>> {
@@ -35,15 +37,23 @@ export class WorkoutRepository {
 
       if (query.startDate || query.endDate) {
         filter.date = {};
-        if (query.startDate) filter.date.$gte = query.startDate;
-        if (query.endDate) filter.date.$lte = query.endDate;
+        if (query.startDate) {
+filter.date.$gte = query.startDate;
+}
+        if (query.endDate) {
+filter.date.$lte = query.endDate;
+}
       }
-      if (query.status) filter.status = query.status as WorkoutStatusValue;
-      if (query.workoutType) filter.workoutType = query.workoutType as WorkoutTypeValue;
+      if (query.status) {
+filter.status = query.status as WorkoutStatusValue;
+}
+      if (query.workoutType) {
+filter.workoutType = query.workoutType as WorkoutTypeValue;
+}
 
       const skip = (query.page - 1) * query.limit;
       const docs = await this.collection
-        .find(filter)
+        .find(filter, { projection: { _id: 0 } })
         .sort({ date: -1 })
         .skip(skip)
         .limit(query.limit)
@@ -57,7 +67,7 @@ export class WorkoutRepository {
 
   public async findById(id: string): Promise<Result<IWorkout | null, AppError>> {
     try {
-      const doc = await this.collection.findOne({ id });
+      const doc = await this.collection.findOne({ id }, { projection: { _id: 0 } });
       return ok(doc);
     } catch (error) {
       logger.error("WorkoutRepository.findById failed", { error });
@@ -68,19 +78,32 @@ export class WorkoutRepository {
   public async update(id: string, data: UpdateWorkout): Promise<Result<IWorkout | null, AppError>> {
     try {
       const updateData: Partial<IWorkout> = {
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date()
+.toISOString(),
       };
-      if (data.name !== undefined) updateData.name = data.name;
-      if (data.workoutType !== undefined) updateData.workoutType = data.workoutType as WorkoutTypeValue;
-      if (data.status !== undefined) updateData.status = data.status as WorkoutStatusValue;
-      if (data.date !== undefined) updateData.date = data.date;
-      if (data.durationMinutes !== undefined) updateData.durationMinutes = data.durationMinutes;
-      if (data.notes !== undefined) updateData.notes = data.notes;
+      if (data.name !== undefined) {
+updateData.name = data.name;
+}
+      if (data.workoutType !== undefined) {
+updateData.workoutType = data.workoutType as WorkoutTypeValue;
+}
+      if (data.status !== undefined) {
+updateData.status = data.status as WorkoutStatusValue;
+}
+      if (data.date !== undefined) {
+updateData.date = data.date;
+}
+      if (data.durationMinutes !== undefined) {
+updateData.durationMinutes = data.durationMinutes;
+}
+      if (data.notes !== undefined) {
+updateData.notes = data.notes;
+}
 
       const result = await this.collection.findOneAndUpdate(
         { id },
         { $set: updateData },
-        { returnDocument: "after" },
+        { returnDocument: "after", projection: { _id: 0 } }
       );
       return ok(result);
     } catch (error) {
@@ -109,11 +132,19 @@ export class WorkoutRepository {
 
       if (query.startDate || query.endDate) {
         filter.date = {};
-        if (query.startDate) filter.date.$gte = query.startDate;
-        if (query.endDate) filter.date.$lte = query.endDate;
+        if (query.startDate) {
+filter.date.$gte = query.startDate;
+}
+        if (query.endDate) {
+filter.date.$lte = query.endDate;
+}
       }
-      if (query.status) filter.status = query.status as WorkoutStatusValue;
-      if (query.workoutType) filter.workoutType = query.workoutType as WorkoutTypeValue;
+      if (query.status) {
+filter.status = query.status as WorkoutStatusValue;
+}
+      if (query.workoutType) {
+filter.workoutType = query.workoutType as WorkoutTypeValue;
+}
 
       const total = await this.collection.countDocuments(filter);
       return ok(total);

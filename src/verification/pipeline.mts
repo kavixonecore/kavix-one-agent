@@ -53,7 +53,7 @@ export async function runVerificationPipeline(
   options: IVerificationOptions,
   gates: IVerificationGates = {}
 ): Promise<IVerificationResult> {
-  const { maxRetries, skipSmoke = false, endpoints = ["/healthz"] } = options;
+  const { maxRetries, skipSmoke = false, endpoints = ["/health"] } = options;
   const eslintFn: EslintGateFn = gates.eslint ?? runEslintGate;
   const testFn: TestGateFn = gates.test ?? runTestGate;
   const smokeFn: SmokeGateFn = gates.smoke ?? runSmokeGate;
