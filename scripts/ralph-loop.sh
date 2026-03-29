@@ -128,6 +128,13 @@ ${PROJECT_DIR}
    b. Use Playwright to take a screenshot of the Swagger UI page
    c. Save the screenshot to .docs/swagger-verification.png
    d. Write a RESULTS.md to .docs/ with test results, screenshot reference, and verification checklist
+7. After ANY code change, update all documentation to stay in sync:
+   - ui/memory.md (API reference, interfaces, endpoints, business rules)
+   - .docs/RESULTS.md (test results)
+   - docs/TASKS.md (check off completed items)
+   - docs/PRD.md (check off completed requirements)
+   - Swagger detail objects if route signatures changed
+   Documentation must ALWAYS match the current state of the API.
 
 ## Important patterns
 

@@ -209,6 +209,7 @@ Existing code generators (Yeoman, Hygen, plop) produce flat scaffolds without un
 - [ ] **Must:** Use kebab-case for file names, PascalCase for classes/interfaces, camelCase for variables/functions
 - [ ] **Must:** Include blank line after class opening brace in all generated classes
 - [ ] **Must:** Run `eslint --fix` on all generated TypeScript files after every generation step; remaining errors block feature completion
+- [ ] **Must:** After every code change (new endpoints, modified schemas, updated business rules, changed interfaces), update all documentation to stay in sync: ui/memory.md (API reference for Angular), .docs/RESULTS.md (test results), TASKS.md (checkboxes), PRD.md (requirements), and Swagger detail objects. Stale documentation is a blocking defect.
 - [ ] **Must:** Use named exports throughout (no default exports)
 - [ ] **Must:** Enforce `@typescript-eslint/no-explicit-any: error` — no `any` in generated code
 - [ ] **Must:** Enforce `@typescript-eslint/explicit-function-return-type: error` — all functions have explicit return types
