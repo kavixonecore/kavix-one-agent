@@ -55,18 +55,32 @@ interface IRawFieldData {
 }
 
 /**
+ * Result from parsing a prompt, including token usage for trace tracking.
+ */
+export interface IParsePromptResult {
+  features: IFeatureSpec[];
+  tokenUsage: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+  };
+}
+
+/**
  * Uses Claude to parse a natural language prompt into an array of feature specs.
+ * Returns both features and token usage for trace tracking.
  * Falls back gracefully if the response cannot be parsed.
  *
  * @param prompt - Natural language description of the API to generate
  * @param apiKey - Anthropic API key
  */
-export async function parsePrompt(prompt: string, apiKey: string): Promise<IFeatureSpec[]> {
+export async function parsePrompt(prompt: string, apiKey: string): Promise<IParsePromptResult> {
   logger.info("Parsing prompt with Claude", { promptLength: prompt.length });
 
   const client = new Anthropic({ apiKey });
 
   let responseText: string;
+  let tokenUsage = { promptTokens: 0, completionTokens: 0, totalTokens: 0 };
 
   try {
     const message = await client.messages.create({
@@ -76,19 +90,27 @@ export async function parsePrompt(prompt: string, apiKey: string): Promise<IFeat
       messages: [{ role: "user", content: prompt }],
     });
 
+    tokenUsage = {
+      promptTokens: message.usage?.input_tokens ?? 0,
+      completionTokens: message.usage?.output_tokens ?? 0,
+      totalTokens: (message.usage?.input_tokens ?? 0) + (message.usage?.output_tokens ?? 0),
+    };
+
+    logger.info("Claude API token usage", tokenUsage);
+
     const content = message.content[0];
     if (content.type !== "text") {
       logger.error("Unexpected content type from Claude", { type: content.type });
-      return [];
+      return { features: [], tokenUsage };
     }
     responseText = content.text;
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error);
-    logger.error("Claude API call failed", { error: message });
-    return [];
+    const msg = error instanceof Error ? error.message : String(error);
+    logger.error("Claude API call failed", { error: msg });
+    return { features: [], tokenUsage };
   }
 
-  return parseClaudeResponse(responseText);
+  return { features: parseClaudeResponse(responseText), tokenUsage };
 }
 
 function parseClaudeResponse(responseText: string): IFeatureSpec[] {

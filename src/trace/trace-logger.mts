@@ -67,6 +67,27 @@ export function recordToolUse(
 }
 
 /**
+ * Records token consumption from an LLM API call.
+ * @param context - The active trace context.
+ * @param promptTokens - Number of prompt/input tokens consumed.
+ * @param completionTokens - Number of completion/output tokens consumed.
+ */
+export function recordTokens(
+  context: ITraceContext,
+  promptTokens: number,
+  completionTokens: number
+): void {
+  context.tokenPrompt += promptTokens;
+  context.tokenCompletion += completionTokens;
+
+  logger.debug("Tokens recorded", {
+    promptTokens,
+    completionTokens,
+    totalSoFar: context.tokenPrompt + context.tokenCompletion,
+  });
+}
+
+/**
  * Records an error in the trace context.
  * @param context - The active trace context.
  * @param error - The error that occurred (any unknown value).

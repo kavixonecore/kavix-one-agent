@@ -74,7 +74,9 @@ export async function runGeneration(options: IRunOptions): Promise<IRunResult> {
     } else if (prompt) {
       emitProgress("Parsing prompt with Claude...");
       const cfg = await getEnv();
-      features = await parsePrompt(prompt, cfg.ANTHROPIC_API_KEY);
+      const parseResult = await parsePrompt(prompt, cfg.ANTHROPIC_API_KEY);
+      features = parseResult.features;
+      emitProgress(`Prompt parsed. Tokens: ${parseResult.tokenUsage.totalTokens} (prompt: ${parseResult.tokenUsage.promptTokens}, completion: ${parseResult.tokenUsage.completionTokens})`);
     } else {
       return makeError(plan, "No input provided. Supply --prompt, --prd, or --interactive");
     }

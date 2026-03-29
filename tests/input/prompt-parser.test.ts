@@ -29,6 +29,10 @@ const mockCreate = mock(async (_params: unknown) => ({
       }),
     },
   ],
+  usage: {
+    input_tokens: 150,
+    output_tokens: 320,
+  },
 }));
 
 mock.module("@anthropic-ai/sdk", () => ({
@@ -58,28 +62,28 @@ describe("prompt-parser", () => {
     });
 
     it("returns parsed feature specs", async () => {
-      const specs = await parsePrompt("Build a work order API", "test-api-key");
-      expect(specs)
+      const result = await parsePrompt("Build a work order API", "test-api-key");
+      expect(result.features)
 .toHaveLength(2);
     });
 
     it("returns feature with correct entityName", async () => {
-      const specs = await parsePrompt("Build a work order API", "test-api-key");
-      const workOrder = specs.find((s) => s.entityName === "WorkOrder");
+      const result = await parsePrompt("Build a work order API", "test-api-key");
+      const workOrder = result.features.find((s) => s.entityName === "WorkOrder");
       expect(workOrder)
 .toBeDefined();
     });
 
     it("converts entityName to kebab-case name", async () => {
-      const specs = await parsePrompt("Build a work order API", "test-api-key");
-      const workOrder = specs.find((s) => s.entityName === "WorkOrder");
+      const result = await parsePrompt("Build a work order API", "test-api-key");
+      const workOrder = result.features.find((s) => s.entityName === "WorkOrder");
       expect(workOrder?.name)
 .toBe("work-order");
     });
 
     it("maps fields correctly from Claude response", async () => {
-      const specs = await parsePrompt("Build a work order API", "test-api-key");
-      const workOrder = specs.find((s) => s.entityName === "WorkOrder");
+      const result = await parsePrompt("Build a work order API", "test-api-key");
+      const workOrder = result.features.find((s) => s.entityName === "WorkOrder");
       const titleField = workOrder?.fields.find((f) => f.name === "title");
       expect(titleField)
 .toBeDefined();
@@ -90,16 +94,16 @@ describe("prompt-parser", () => {
     });
 
     it("maps Date type correctly", async () => {
-      const specs = await parsePrompt("Build a work order API", "test-api-key");
-      const workOrder = specs.find((s) => s.entityName === "WorkOrder");
+      const result = await parsePrompt("Build a work order API", "test-api-key");
+      const workOrder = result.features.find((s) => s.entityName === "WorkOrder");
       const createdAt = workOrder?.fields.find((f) => f.name === "createdAt");
       expect(createdAt?.type)
 .toBe("Date");
     });
 
     it("sets enums and indexes to empty arrays", async () => {
-      const specs = await parsePrompt("Build a work order API", "test-api-key");
-      for (const spec of specs) {
+      const result = await parsePrompt("Build a work order API", "test-api-key");
+      for (const spec of result.features) {
         expect(spec.enums)
 .toHaveLength(0);
         expect(spec.indexes)
@@ -111,8 +115,8 @@ describe("prompt-parser", () => {
       mockCreate.mockImplementationOnce(async () => {
         throw new Error("Network error");
       });
-      const specs = await parsePrompt("Build a work order API", "test-api-key");
-      expect(specs)
+      const result = await parsePrompt("Build a work order API", "test-api-key");
+      expect(result.features)
 .toHaveLength(0);
     });
 
@@ -120,8 +124,8 @@ describe("prompt-parser", () => {
       mockCreate.mockImplementationOnce(async () => ({
         content: [{ type: "text", text: "this is not json at all" }],
       }));
-      const specs = await parsePrompt("Build a work order API", "test-api-key");
-      expect(specs)
+      const result = await parsePrompt("Build a work order API", "test-api-key");
+      expect(result.features)
 .toHaveLength(0);
     });
 
@@ -129,8 +133,8 @@ describe("prompt-parser", () => {
       mockCreate.mockImplementationOnce(async () => ({
         content: [{ type: "text", text: '{"wrong": "schema"}' }],
       }));
-      const specs = await parsePrompt("Build a work order API", "test-api-key");
-      expect(specs)
+      const result = await parsePrompt("Build a work order API", "test-api-key");
+      expect(result.features)
 .toHaveLength(0);
     });
 
@@ -150,11 +154,30 @@ describe("prompt-parser", () => {
           },
         ],
       }));
-      const specs = await parsePrompt("Build a product API", "test-api-key");
-      expect(specs)
+      const result = await parsePrompt("Build a product API", "test-api-key");
+      expect(result.features)
 .toHaveLength(1);
-      expect(specs[0].entityName)
+      expect(result.features[0].entityName)
 .toBe("Product");
+    });
+
+    it("returns token usage from Claude API response", async () => {
+      const result = await parsePrompt("Build a work order API", "test-api-key");
+      expect(result.tokenUsage.promptTokens)
+.toBe(150);
+      expect(result.tokenUsage.completionTokens)
+.toBe(320);
+      expect(result.tokenUsage.totalTokens)
+.toBe(470);
+    });
+
+    it("returns zero tokens when API call fails", async () => {
+      mockCreate.mockImplementationOnce(async () => {
+        throw new Error("Network error");
+      });
+      const result = await parsePrompt("Build a work order API", "test-api-key");
+      expect(result.tokenUsage.totalTokens)
+.toBe(0);
     });
   });
 });
