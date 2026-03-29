@@ -105,8 +105,8 @@ async function startAuthTestServer(): Promise<AuthTestContext> {
   const authConfig = {
     jwksUrl: "http://localhost/unused",
     publicPaths: ["/health", "/version", "/swagger", "/scalar"],
-    rateLimitIpPerMin: 5,
-    rateLimitUserPerMin: 100,
+    rateLimitIpPerMin: 50,
+    rateLimitUserPerMin: 1000,
   };
 
   const jwksVerifier = new JwksVerifier(authConfig, jwksOverride);
@@ -195,9 +195,9 @@ describe("Auth Integration Tests", () => {
   });
 
   it("Rapid requests beyond IP rate limit — returns 429", async () => {
-    // rateLimitIpPerMin is 5 — send 10 requests from same IP to trigger limit
+    // rateLimitIpPerMin is 50 — send 55 requests from same IP to trigger limit
     const results: number[] = [];
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 55; i++) {
       const res = await fetch(`${ctx.baseUrl}/exercises`, {
         headers: { "Authorization": `Bearer ${ctx.authToken}` },
       });
