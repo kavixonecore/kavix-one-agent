@@ -37,9 +37,12 @@
 
 ## Top Priority — What to Do Next
 
-### Option A: Build the Angular UI (recommended)
-- `tests/e2e/fitness-tracker/ui/memory.md` has complete API reference with auth section
-- Phase 2 tasks: TASK-011 (scaffolding), TASK-012 (dashboard + charts), TASK-013 (pages)
+### Option A: Build the Angular UI (recommended — PRD + tasks ready)
+- **PRD:** `tests/e2e/fitness-tracker/ui/docs/PRD.md` — fully fleshed out with design, UX, charts, auth, testing
+- **Tasks:** `tests/e2e/fitness-tracker/ui/docs/TASKS.md` — 13 tasks, ~121 files, dependency graph
+- **API ref:** `tests/e2e/fitness-tracker/ui/memory.md` — complete endpoint reference with auth
+- **Agent:** `@angular-ui` subagent ready at `.claude/agents/angular-ui.md`
+- Run: invoke `@angular-ui` or use oda-agent against `ui/docs/TASKS.md`
 
 ### Option B: Test agent-one on a new domain
 - Run Ralph Loop or oda-agent against a completely different API
