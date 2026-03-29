@@ -5,62 +5,69 @@ import { startTestServer } from "./helpers/test-server.mjs";
 import type { ITestServer } from "./helpers/test-server.mjs";
 
 interface WorkoutData {
-  id: string;
-  name: string;
-  workoutType: string;
-  status: string;
-  date: string;
-  createdAt: string;
-  updatedAt: string;
+  readonly id: string;
+  readonly name: string;
+  readonly workoutType: string;
+  readonly status: string;
+  readonly date: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
 }
 
 interface ExerciseData {
-  id: string;
-  name: string;
-  description: string;
-  muscleGroup: string;
-  difficultyLevel: string;
-  equipmentRequired: string[];
-  instructions: string;
-  createdAt: string;
-  updatedAt: string;
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly muscleGroup: string;
+  readonly difficultyLevel: string;
+  readonly equipmentRequired: string[];
+  readonly instructions: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
 }
 
 interface WorkoutExerciseData {
-  id: string;
-  workoutId: string;
-  exerciseId: string;
-  order: number;
-  sets?: number;
-  reps?: number;
-  weightLbs?: number;
-  durationSeconds?: number;
-  restSeconds?: number;
-  notes?: string;
-  userId?: string;
-  createdAt: string;
-  updatedAt: string;
+  readonly id: string;
+  readonly workoutId: string;
+  readonly exerciseId: string;
+  readonly order: number;
+  readonly sets?: number;
+  readonly reps?: number;
+  readonly weightLbs?: number;
+  readonly durationSeconds?: number;
+  readonly restSeconds?: number;
+  readonly notes?: string;
+  readonly userId?: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
 }
 
 interface SuccessResponse<T> {
-  success: true;
-  data: T;
+  readonly success: true;
+  readonly data: T;
 }
 
 interface ListResponse<T> {
-  success: true;
-  data: T[];
-  count: number;
+  readonly success: true;
+  readonly data: T[];
+  readonly count: number;
 }
 
 interface ErrorResponse {
-  success: false;
-  error: string;
+  readonly success: false;
+  readonly error: string;
 }
 
-const today = new Date()
-.toISOString()
-.split("T")[0] ?? "2026-03-28";
+const today = new Date().toISOString().split("T")[0] ?? "2026-03-28";
+
+const authHeaders = (token: string): Record<string, string> => ({
+  "Authorization": `Bearer ${token}`,
+});
+
+const jsonHeaders = (token: string): Record<string, string> => ({
+  "Content-Type": "application/json",
+  "Authorization": `Bearer ${token}`,
+});
 
 describe("Workout Exercises Integration Tests", () => {
   let server: ITestServer;
@@ -68,16 +75,12 @@ describe("Workout Exercises Integration Tests", () => {
   let exerciseId: string;
   let workoutExerciseId: string;
 
-  beforeAll(async () => {
+  beforeAll(async (): Promise<void> => {
     server = await startTestServer();
 
-    // Create a workout
     const workoutRes = await fetch(`${server.baseUrl}/workouts`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${server.authToken}`,
-      },
+      headers: jsonHeaders(server.authToken),
       body: JSON.stringify({
         name: "Strength Workout",
         workoutType: "weightlifting",
@@ -88,13 +91,9 @@ describe("Workout Exercises Integration Tests", () => {
     const workoutBody = await workoutRes.json() as SuccessResponse<WorkoutData>;
     workoutId = workoutBody.data.id;
 
-    // Create an exercise
     const exerciseRes = await fetch(`${server.baseUrl}/exercises`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${server.authToken}`,
-      },
+      headers: jsonHeaders(server.authToken),
       body: JSON.stringify({
         name: "Barbell Squat",
         description: "Compound lower body exercise",
@@ -108,17 +107,77 @@ describe("Workout Exercises Integration Tests", () => {
     exerciseId = exerciseBody.data.id;
   });
 
-  afterAll(async () => {
+  afterAll(async (): Promise<void> => {
     await server.cleanup();
   });
 
-  it("POST /workout-exercises — creates link with valid IDs, returns 201", async () => {
+  it("GET /workout-exercises without auth token — returns 401", async (): Promise<void> => {
+    const res = await fetch(`${server.baseUrl}/workout-exercises`);
+    expect(res.status).toBe(401);
+    const body = await res.json() as ErrorResponse;
+    expect(body.success).toBe(false);
+  });
+
+  it("POST /workout-exercises without auth token — returns 401", async (): Promise<void> => {
     const res = await fetch(`${server.baseUrl}/workout-exercises`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${server.authToken}`,
-      },
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ workoutId, exerciseId, order: 1 }),
+    });
+    expect(res.status).toBe(401);
+    const body = await res.json() as ErrorResponse;
+    expect(body.success).toBe(false);
+  });
+
+  it("POST /workout-exercises — missing required field order returns 400", async (): Promise<void> => {
+    const res = await fetch(`${server.baseUrl}/workout-exercises`, {
+      method: "POST",
+      headers: jsonHeaders(server.authToken),
+      body: JSON.stringify({ workoutId, exerciseId }),
+    });
+    expect(res.status).toBe(400);
+    const body = await res.json() as ErrorResponse;
+    expect(body.success).toBe(false);
+  });
+
+  it("POST /workout-exercises — invalid workoutId returns 400", async (): Promise<void> => {
+    const res = await fetch(`${server.baseUrl}/workout-exercises`, {
+      method: "POST",
+      headers: jsonHeaders(server.authToken),
+      body: JSON.stringify({
+        workoutId: "01NONEXISTENTWORKOUTID00000",
+        exerciseId,
+        order: 1,
+      }),
+    });
+    // Service wraps not-found as ValidationError → 400
+    expect(res.status).toBe(400);
+    const body = await res.json() as ErrorResponse;
+    expect(body.success).toBe(false);
+    expect(typeof body.error).toBe("string");
+  });
+
+  it("POST /workout-exercises — invalid exerciseId returns 400", async (): Promise<void> => {
+    const res = await fetch(`${server.baseUrl}/workout-exercises`, {
+      method: "POST",
+      headers: jsonHeaders(server.authToken),
+      body: JSON.stringify({
+        workoutId,
+        exerciseId: "01NONEXISTENTEXERCISEID0000",
+        order: 2,
+      }),
+    });
+    // Service wraps not-found as ValidationError → 400
+    expect(res.status).toBe(400);
+    const body = await res.json() as ErrorResponse;
+    expect(body.success).toBe(false);
+    expect(typeof body.error).toBe("string");
+  });
+
+  it("POST /workout-exercises — creates link with valid IDs, returns 201", async (): Promise<void> => {
+    const res = await fetch(`${server.baseUrl}/workout-exercises`, {
+      method: "POST",
+      headers: jsonHeaders(server.authToken),
       body: JSON.stringify({
         workoutId,
         exerciseId,
@@ -130,155 +189,130 @@ describe("Workout Exercises Integration Tests", () => {
         notes: "Work up to heavy set",
       }),
     });
-
-    expect(res.status)
-.toBe(201);
+    expect(res.status).toBe(201);
     const body = await res.json() as SuccessResponse<WorkoutExerciseData>;
-    expect(body.success)
-.toBe(true);
-    expect(body.data.workoutId)
-.toBe(workoutId);
-    expect(body.data.exerciseId)
-.toBe(exerciseId);
-    expect(body.data.order)
-.toBe(1);
-    expect(body.data.sets)
-.toBe(4);
-    expect(body.data.reps)
-.toBe(8);
-    expect(typeof body.data.id)
-.toBe("string");
-
+    expect(body.success).toBe(true);
+    expect(body.data.workoutId).toBe(workoutId);
+    expect(body.data.exerciseId).toBe(exerciseId);
+    expect(body.data.order).toBe(1);
+    expect(body.data.sets).toBe(4);
+    expect(body.data.reps).toBe(8);
+    expect(body.data.weightLbs).toBe(185);
+    expect(typeof body.data.id).toBe("string");
     workoutExerciseId = body.data.id;
   });
 
-  it("POST /workout-exercises — invalid workoutId returns error", async () => {
+  it("GET /workout-exercises — returns 200 with all records, count >= 1", async (): Promise<void> => {
     const res = await fetch(`${server.baseUrl}/workout-exercises`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${server.authToken}`,
-      },
-      body: JSON.stringify({
-        workoutId: "01NONEXISTENTWORKOUTID00000",
-        exerciseId,
-        order: 1,
-      }),
+      headers: authHeaders(server.authToken),
     });
-
-    expect([400, 404, 500].includes(res.status))
-.toBe(true);
-    const body = await res.json() as ErrorResponse;
-    expect(body.success)
-.toBe(false);
-  });
-
-  it("POST /workout-exercises — invalid exerciseId returns error", async () => {
-    const res = await fetch(`${server.baseUrl}/workout-exercises`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${server.authToken}`,
-      },
-      body: JSON.stringify({
-        workoutId,
-        exerciseId: "01NONEXISTENTEXERCISEID0000",
-        order: 2,
-      }),
-    });
-
-    expect([400, 404, 500].includes(res.status))
-.toBe(true);
-    const body = await res.json() as ErrorResponse;
-    expect(body.success)
-.toBe(false);
-  });
-
-  it("GET /workout-exercises — returns all workout exercises", async () => {
-    const res = await fetch(`${server.baseUrl}/workout-exercises`, {
-      headers: { "Authorization": `Bearer ${server.authToken}` },
-    });
-
-    expect(res.status)
-.toBe(200);
+    expect(res.status).toBe(200);
     const body = await res.json() as ListResponse<WorkoutExerciseData>;
-    expect(body.success)
-.toBe(true);
-    expect(Array.isArray(body.data))
-.toBe(true);
-    expect(body.count)
-.toBeGreaterThanOrEqual(1);
+    expect(body.success).toBe(true);
+    expect(Array.isArray(body.data)).toBe(true);
+    expect(body.count).toBeGreaterThanOrEqual(1);
+    expect(body.data.some((we) => we.id === workoutExerciseId)).toBe(true);
   });
 
-  it("GET /workout-exercises/workout/:workoutId — returns exercises for workout", async () => {
+  it("GET /workout-exercises/workout/:workoutId — returns exercises for workout", async (): Promise<void> => {
     const res = await fetch(`${server.baseUrl}/workout-exercises/workout/${workoutId}`, {
-      headers: { "Authorization": `Bearer ${server.authToken}` },
+      headers: authHeaders(server.authToken),
     });
-
-    expect(res.status)
-.toBe(200);
+    expect(res.status).toBe(200);
     const body = await res.json() as ListResponse<WorkoutExerciseData>;
-    expect(body.success)
-.toBe(true);
-    expect(Array.isArray(body.data))
-.toBe(true);
-    expect(body.data.length)
-.toBeGreaterThanOrEqual(1);
+    expect(body.success).toBe(true);
+    expect(body.data.length).toBeGreaterThanOrEqual(1);
     for (const we of body.data) {
-      expect(we.workoutId)
-.toBe(workoutId);
+      expect(we.workoutId).toBe(workoutId);
     }
+    expect(body.data.some((we) => we.id === workoutExerciseId)).toBe(true);
   });
 
-  it("PUT /workout-exercises/:id — updates sets and reps", async () => {
+  it("GET /workout-exercises/:id — returns 200 with matching data", async (): Promise<void> => {
+    const res = await fetch(`${server.baseUrl}/workout-exercises/${workoutExerciseId}`, {
+      headers: authHeaders(server.authToken),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json() as SuccessResponse<WorkoutExerciseData>;
+    expect(body.success).toBe(true);
+    expect(body.data.id).toBe(workoutExerciseId);
+    expect(body.data.workoutId).toBe(workoutId);
+    expect(body.data.exerciseId).toBe(exerciseId);
+  });
+
+  it("GET /workout-exercises/:id — nonexistent ID returns 404", async (): Promise<void> => {
+    const res = await fetch(`${server.baseUrl}/workout-exercises/01NONEXISTENTID000000000000`, {
+      headers: authHeaders(server.authToken),
+    });
+    expect(res.status).toBe(404);
+    const body = await res.json() as ErrorResponse;
+    expect(body.success).toBe(false);
+  });
+
+  it("PUT /workout-exercises/:id — updates sets and reps, returns 200", async (): Promise<void> => {
     const res = await fetch(`${server.baseUrl}/workout-exercises/${workoutExerciseId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${server.authToken}`,
-      },
+      headers: jsonHeaders(server.authToken),
       body: JSON.stringify({ sets: 5, reps: 5, weightLbs: 205 }),
     });
-
-    expect(res.status)
-.toBe(200);
+    expect(res.status).toBe(200);
     const body = await res.json() as SuccessResponse<WorkoutExerciseData>;
-    expect(body.success)
-.toBe(true);
-    expect(body.data.sets)
-.toBe(5);
-    expect(body.data.reps)
-.toBe(5);
-    expect(body.data.weightLbs)
-.toBe(205);
-    expect(body.data.id)
-.toBe(workoutExerciseId);
+    expect(body.success).toBe(true);
+    expect(body.data.sets).toBe(5);
+    expect(body.data.reps).toBe(5);
+    expect(body.data.weightLbs).toBe(205);
+    expect(body.data.id).toBe(workoutExerciseId);
   });
 
-  it("DELETE /workout-exercises/:id — deletes workout exercise", async () => {
+  it("GET /workout-exercises/:id — verify sets/reps/weight update persisted", async (): Promise<void> => {
+    const res = await fetch(`${server.baseUrl}/workout-exercises/${workoutExerciseId}`, {
+      headers: authHeaders(server.authToken),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json() as SuccessResponse<WorkoutExerciseData>;
+    expect(body.data.sets).toBe(5);
+    expect(body.data.reps).toBe(5);
+    expect(body.data.weightLbs).toBe(205);
+  });
+
+  it("PUT /workout-exercises/:id — nonexistent ID returns 404", async (): Promise<void> => {
+    const res = await fetch(`${server.baseUrl}/workout-exercises/01NONEXISTENTID000000000000`, {
+      method: "PUT",
+      headers: jsonHeaders(server.authToken),
+      body: JSON.stringify({ sets: 3 }),
+    });
+    expect(res.status).toBe(404);
+    const body = await res.json() as ErrorResponse;
+    expect(body.success).toBe(false);
+  });
+
+  it("DELETE /workout-exercises/:id — nonexistent ID returns 404", async (): Promise<void> => {
+    const res = await fetch(`${server.baseUrl}/workout-exercises/01NONEXISTENTID000000000000`, {
+      method: "DELETE",
+      headers: authHeaders(server.authToken),
+    });
+    expect(res.status).toBe(404);
+    const body = await res.json() as ErrorResponse;
+    expect(body.success).toBe(false);
+  });
+
+  it("DELETE /workout-exercises/:id — deletes record, returns 200 with deleted: true", async (): Promise<void> => {
     const res = await fetch(`${server.baseUrl}/workout-exercises/${workoutExerciseId}`, {
       method: "DELETE",
-      headers: { "Authorization": `Bearer ${server.authToken}` },
+      headers: authHeaders(server.authToken),
     });
-
-    expect(res.status)
-.toBe(200);
+    expect(res.status).toBe(200);
     const body = await res.json() as SuccessResponse<{ deleted: boolean }>;
-    expect(body.success)
-.toBe(true);
-    expect(body.data.deleted)
-.toBe(true);
+    expect(body.success).toBe(true);
+    expect(body.data.deleted).toBe(true);
   });
 
-  it("GET /workout-exercises/:id — deleted record returns 404", async () => {
+  it("GET /workout-exercises/:id — deleted record returns 404", async (): Promise<void> => {
     const res = await fetch(`${server.baseUrl}/workout-exercises/${workoutExerciseId}`, {
-      headers: { "Authorization": `Bearer ${server.authToken}` },
+      headers: authHeaders(server.authToken),
     });
-
-    expect(res.status)
-.toBe(404);
+    expect(res.status).toBe(404);
     const body = await res.json() as ErrorResponse;
-    expect(body.success)
-.toBe(false);
+    expect(body.success).toBe(false);
   });
 });
