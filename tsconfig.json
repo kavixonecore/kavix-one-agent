@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "moduleDetection": "force",
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@kavix-one/agent-one/*": ["src/*"]
+    }
+  },
+  "include": ["src/**/*.mts", "tests/**/*.ts", "templates/**/*.mts"],
+  "exclude": ["node_modules", "dist"]
+}

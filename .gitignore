@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.docs/
+# Compiled output (but not config files)
+*.mjs.map
+*.d.mts
+!eslint.config.mjs
+bun.lock
+bun.lockb
+tests/__tmp*

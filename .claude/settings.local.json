@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.anthropic.com)",
+      "WebFetch(domain:blog.langchain.com)",
+      "WebFetch(domain:openai.com)",
+      "WebSearch",
+      "WebFetch(domain:www.infoq.com)",
+      "WebFetch(domain:martinfowler.com)",
+      "Read(//c/projects/sylvesterllc/utils/**)",
+      "Read(//c/projects/sylvesterllc/**)",
+      "Bash(find \"C:\\\\projects\\\\sylvesterllc\\\\utils\\\\src\" -type f -exec wc -l {} +)",
+      "Bash(grep -E \"\\\\.ts$\")",
+      "Bash(xargs wc:*)",
+      "Bash(find C:projectsdavisSylvesteryoutube-daily-digest -maxdepth 2 -name eslint.config.* -o -name .eslintrc*)",
+      "Bash(bunx eslint:*)",
+      "Bash(npx eslint:*)",
+      "Bash(bun:*)",
+      "Bash(for task:*)",
+      "Bash(do)",
+      "Bash(touch \"C:/projects/kavix-one/agent-one/.ai/activity/phase4-addons/$task/.complete\")",
+      "Bash(done)",
+      "Bash(bun --print \"require\\(''''src/runner.mts''''\\)\")",
+      "Bash(sed -i 's|../../src/|../src/|g' /c/projects/kavix-one/agent-one/tests/runner.test.ts)",
+      "Bash(sed -i 's|../../src/|../src/|g' /c/projects/kavix-one/agent-one/tests/agent-bridge.test.ts)",
+      "Bash(ls /c/projects/kavix-one/agent-one/*.env*)"
+    ]
+  }
+}
