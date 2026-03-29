@@ -133,6 +133,7 @@ Existing code generators (Yeoman, Hygen, plop) produce flat scaffolds without un
 - [ ] **Must:** Generate getContainer() IoC pattern returning { db, databaseConfig, repositories, services, helpers }
 - [ ] **Must:** Generate Elysia server setup with cors + swagger + tracePlugin + apiRoutes composition
 - [ ] **Must:** Configure Swagger at `/swagger` as the default documentation page — Elysia's swagger plugin serves the UI at this path automatically. Log the Swagger URL at server startup.
+- [ ] **Must:** After smoke tests pass, use Playwright to navigate to `/swagger`, verify the page loads (title contains API name), take a screenshot, and save it to `.docs/swagger-verification.png`. Include the screenshot in the results documentation as proof of successful deployment.
 - [ ] **Must:** Generate trace plugin with onRequest (ULID traceId), onAfterHandle (log response), onError (log error)
 - [ ] **Must:** Generate env config as Zod schema validating Bun.env at startup, exported as singleton
 - [ ] **Must:** Generate standardized response format: { success: true, data: [...], count: N } or { success: false, error: "message" }
@@ -418,6 +419,7 @@ agent-one/
         - ESLint pass (zero errors after --fix)
         - bun test pass
         - Endpoint smoke test pass
+        - Playwright visual verification: navigate to /swagger, take screenshot, save to .docs/
      k. If verification fails:
         - Log errors to trace
         - Attempt auto-fix (up to 3 retries)

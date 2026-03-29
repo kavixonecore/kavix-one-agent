@@ -294,6 +294,26 @@ src/app.mts
 
 ---
 
+### TASK-010: Playwright Visual Verification
+**Depends on:** TASK-009
+**Milestone:** 7
+
+- [ ] Ensure API server is running (docker compose up + bun src/index.mts)
+- [ ] Use Playwright to navigate to http://localhost:3000/swagger
+- [ ] Verify page title contains the API name ("Fitness Tracker API")
+- [ ] Verify all 6 endpoint groups are visible in the sidebar (Health, Exercises, Workouts, Progress Metrics, Running Logs, Workout Exercises)
+- [ ] Take a screenshot of the Swagger UI page
+- [ ] Save screenshot to `.docs/swagger-verification.png`
+- [ ] Write `.docs/RESULTS.md` with:
+  - Test results summary (total pass/fail)
+  - ESLint status
+  - Screenshot embedded as markdown image
+  - API endpoint verification results
+  - Infrastructure status (Docker, server, Swagger)
+  - Verification checklist (all items checked)
+
+---
+
 ## Phase 2 — Angular UI
 
 ### TASK-010: Angular UI Scaffolding
@@ -352,6 +372,7 @@ src/app.mts
 | 007 | Workout Exercises Entity | 003, 004 | 1 | 6 |
 | 008 | Integration Verification | 003-007 | 1 | 7 |
 | 009 | Smoke Test (Docker) | 008 | 1 | 7 |
-| 010 | Angular Scaffolding | 008 | 2 | 8 |
-| 011 | Dashboard + Charts | 010 | 2 | 9 |
-| 012 | Remaining UI Pages | 011 | 2 | 10-14 |
+| 010 | Playwright Visual Verification | 009 | 1 | 7 |
+| 011 | Angular Scaffolding | 010 | 2 | 8 |
+| 012 | Dashboard + Charts | 011 | 2 | 9 |
+| 013 | Remaining UI Pages | 012 | 2 | 10-14 |

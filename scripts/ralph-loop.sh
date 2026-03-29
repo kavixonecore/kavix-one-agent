@@ -66,6 +66,24 @@ while [ "${ITERATION}" -le "${MAX_ITERATIONS}" ]; do
     echo " ALL TASKS COMPLETE"
     echo " Iterations used: $((ITERATION - 1))"
     echo "========================================"
+
+    # --- Final Playwright verification ---
+    echo ""
+    echo " Running final Playwright visual verification..."
+    FINAL_PROMPT="Navigate to the Swagger UI page of the API at ${PROJECT_DIR}. \
+Start the server if not running (cd ${PROJECT_DIR} && docker compose up -d && MONGODB_URI=mongodb://admin:password@localhost:27017/?authSource=admin bun src/index.mts &). \
+Wait for it to start, then use Playwright to: \
+1. Navigate to http://localhost:3000/swagger \
+2. Verify the page title contains the API name \
+3. Take a screenshot and save it to ${PROJECT_DIR}/.docs/swagger-verification.png \
+4. Write a RESULTS.md to ${PROJECT_DIR}/.docs/ with: test results, screenshot reference, all verification checks passed"
+
+    ${CLAUDE_CMD} --print --dangerously-skip-permissions \
+      -p "${FINAL_PROMPT}" \
+      > "${RALPH_DIR}/final-verification.log" 2>&1 || true
+
+    echo " Final verification complete. Check ${PROJECT_DIR}/.docs/"
+
     touch "${RALPH_DIR}/.ralph-complete"
     exit 0
   fi
@@ -105,6 +123,11 @@ ${PROJECT_DIR}
 3. Run \`eslint --fix\` after writing files
 4. Run \`bun test\` after writing tests
 5. When done, output a summary with: files created, tests added, lint status, errors encountered
+6. If this is the FINAL task (integration/smoke test), also:
+   a. Start the server and verify /swagger loads (HTTP 200)
+   b. Use Playwright to take a screenshot of the Swagger UI page
+   c. Save the screenshot to .docs/swagger-verification.png
+   d. Write a RESULTS.md to .docs/ with test results, screenshot reference, and verification checklist
 
 ## Important patterns
 
