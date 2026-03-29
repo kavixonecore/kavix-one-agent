@@ -135,6 +135,10 @@ ${PROJECT_DIR}
    - docs/PRD.md (check off completed requirements)
    - Swagger detail objects if route signatures changed
    Documentation must ALWAYS match the current state of the API.
+8. NEVER use deprecated packages, methods, or APIs. Always use latest stable versions.
+   - Use @elysiajs/openapi (NOT @elysiajs/swagger which is deprecated)
+   - If unsure about an API, read the docs (https://elysiajs.com)
+   - If a deprecation warning appears, fix it immediately
 
 ## Important patterns
 

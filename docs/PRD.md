@@ -221,6 +221,8 @@ Existing code generators (Yeoman, Hygen, plop) produce flat scaffolds without un
 - [ ] **Must:** Enforce `@typescript-eslint/explicit-module-boundary-types: error`
 - [ ] **Must:** Use double quotes for strings (`@stylistic/quotes: "double"`)
 - [ ] **Must:** Generate ESLint flat config (eslint.config.mjs) based on ct-ai-photo-qc canonical config with @eslint/js, typescript-eslint, @stylistic, eslint-plugin-import, eslint-plugin-jsdoc
+- [ ] **Must:** Always use latest stable versions of Elysia and all plugins. Use `@elysiajs/openapi` (NOT `@elysiajs/swagger` which is deprecated). Never use deprecated methods, APIs, or packages anywhere in generated code.
+- [ ] **Must:** When unsure if an API/method is current, read the official documentation (https://elysiajs.com) before using it. If a deprecation warning appears in console or Playwright verification, immediately replace with the recommended alternative.
 - [ ] **Won't:** Generate Angular UI components (deferred to future phase)
 - [ ] **Won't:** Support runtimes other than Bun
 - [ ] **Won't:** Support frameworks other than Elysia
