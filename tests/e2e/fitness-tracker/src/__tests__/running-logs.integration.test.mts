@@ -67,7 +67,10 @@ describe("Running Logs Integration Tests", () => {
     // Create a workout to link running logs to
     const res = await fetch(`${server.baseUrl}/workouts`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         name: "Running Workout",
         workoutType: "running",
@@ -86,7 +89,10 @@ describe("Running Logs Integration Tests", () => {
   it("POST /running-logs — creates log with valid workoutId, returns 201", async () => {
     const res = await fetch(`${server.baseUrl}/running-logs`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         workoutId,
         distanceMiles: 5.0,
@@ -120,7 +126,10 @@ describe("Running Logs Integration Tests", () => {
   it("POST /running-logs — invalid workoutId returns error", async () => {
     const res = await fetch(`${server.baseUrl}/running-logs`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         workoutId: "01NONEXISTENTWORKOUTID00000",
         distanceMiles: 3.0,
@@ -139,7 +148,10 @@ describe("Running Logs Integration Tests", () => {
   it("POST /running-logs — without pace auto-calculates durationMinutes/distanceMiles", async () => {
     const res = await fetch(`${server.baseUrl}/running-logs`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         workoutId,
         distanceMiles: 4.0,
@@ -159,7 +171,9 @@ describe("Running Logs Integration Tests", () => {
   });
 
   it("GET /running-logs — returns all running logs", async () => {
-    const res = await fetch(`${server.baseUrl}/running-logs`);
+    const res = await fetch(`${server.baseUrl}/running-logs`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -173,7 +187,9 @@ describe("Running Logs Integration Tests", () => {
   });
 
   it("GET /running-logs/workout/:workoutId — filters by workout", async () => {
-    const res = await fetch(`${server.baseUrl}/running-logs/workout/${workoutId}`);
+    const res = await fetch(`${server.baseUrl}/running-logs/workout/${workoutId}`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -191,7 +207,9 @@ describe("Running Logs Integration Tests", () => {
   });
 
   it("GET /running-logs/personal-bests — returns fastest pace, longest distance, longest duration", async () => {
-    const res = await fetch(`${server.baseUrl}/running-logs/personal-bests`);
+    const res = await fetch(`${server.baseUrl}/running-logs/personal-bests`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -213,7 +231,10 @@ describe("Running Logs Integration Tests", () => {
   it("PUT /running-logs/:id — updates distance", async () => {
     const res = await fetch(`${server.baseUrl}/running-logs/${runningLogId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({ distanceMiles: 5.5 }),
     });
 
@@ -231,6 +252,7 @@ describe("Running Logs Integration Tests", () => {
   it("DELETE /running-logs/:id — deletes running log", async () => {
     const res = await fetch(`${server.baseUrl}/running-logs/${runningLogId}`, {
       method: "DELETE",
+      headers: { "Authorization": `Bearer ${server.authToken}` },
     });
 
     expect(res.status)
@@ -243,7 +265,9 @@ describe("Running Logs Integration Tests", () => {
   });
 
   it("GET /running-logs/:id — deleted log returns 404", async () => {
-    const res = await fetch(`${server.baseUrl}/running-logs/${runningLogId}`);
+    const res = await fetch(`${server.baseUrl}/running-logs/${runningLogId}`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(404);

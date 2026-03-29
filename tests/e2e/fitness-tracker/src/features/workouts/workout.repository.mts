@@ -103,7 +103,7 @@ updateData.notes = data.notes;
       const result = await this.collection.findOneAndUpdate(
         { id },
         { $set: updateData },
-        { returnDocument: "after", projection: { _id: 0 } }
+        { returnDocument: "after", projection: { _id: 0 } },
       );
       return ok(result);
     } catch (error) {

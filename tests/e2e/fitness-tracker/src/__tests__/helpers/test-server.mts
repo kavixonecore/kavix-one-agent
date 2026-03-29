@@ -1,4 +1,6 @@
 import { MongoClient } from "mongodb";
+import { generateKeyPair, exportJWK, SignJWT, createLocalJWKSet } from "jose";
+import type { JWKSFunction } from "../../shared/auth/jwks-verifier.mjs";
 
 import { createApp } from "../../app.mjs";
 import { ExerciseRepository } from "../../features/exercises/exercise.repository.mjs";
@@ -11,6 +13,11 @@ import { RunningLogRepository } from "../../features/running-logs/running-log.re
 import { RunningLogService } from "../../features/running-logs/running-log.service.mjs";
 import { WorkoutExerciseRepository } from "../../features/workout-exercises/workout-exercise.repository.mjs";
 import { WorkoutExerciseService } from "../../features/workout-exercises/workout-exercise.service.mjs";
+import { JwksVerifier } from "../../shared/auth/jwks-verifier.mjs";
+import { RateLimiter } from "../../shared/auth/rate-limiter.mjs";
+import { AuthAuditLogger } from "../../shared/auth/audit-logger.mjs";
+import { logger } from "../../shared/logger.mjs";
+import { buildAuthConfig } from "../../shared/container.mjs";
 
 import type { IAppContainer } from "../../shared/container.mjs";
 import type { Elysia } from "elysia";
@@ -19,6 +26,7 @@ export interface ITestServer {
   app: Elysia;
   baseUrl: string;
   cleanup: () => Promise<void>;
+  authToken: string;
 }
 
 const TEST_DB_NAME = "fitness_tracker_integration_test";
@@ -30,10 +38,35 @@ const getNextPort = (): number => {
   return portCounter;
 };
 
+async function buildMockJwks(): Promise<{ jwksOverride: JWKSFunction; authToken: string }> {
+  const { publicKey, privateKey } = await generateKeyPair("RS256");
+  const publicJwk = await exportJWK(publicKey);
+  publicJwk.kid = "test-key-1";
+  publicJwk.use = "sig";
+  publicJwk.alg = "RS256";
+
+  const jwksOverride = createLocalJWKSet({ keys: [publicJwk] }) as unknown as JWKSFunction;
+
+  const authToken = await new SignJWT({
+    sub: "test-user",
+    email: "test@example.com",
+    roles: ["user"],
+    permissions: [],
+  })
+    .setProtectedHeader({ alg: "RS256", kid: "test-key-1" })
+    .setIssuedAt()
+    .setExpirationTime("1h")
+    .sign(privateKey);
+
+  return { jwksOverride, authToken };
+}
+
 export const startTestServer = async (): Promise<ITestServer> => {
   const uri = process.env["MONGODB_URI"] ?? "mongodb://admin:password@localhost:27017/?authSource=admin";
   const client = new MongoClient(uri);
   await client.connect();
+
+  const { jwksOverride, authToken } = await buildMockJwks();
 
   const exerciseRepository = new ExerciseRepository(client, TEST_DB_NAME);
   const exerciseService = new ExerciseService(exerciseRepository);
@@ -51,8 +84,13 @@ export const startTestServer = async (): Promise<ITestServer> => {
   const workoutExerciseService = new WorkoutExerciseService(
     workoutExerciseRepository,
     workoutService,
-    exerciseService
+    exerciseService,
   );
+
+  const authConfig = buildAuthConfig();
+  const jwksVerifier = new JwksVerifier(authConfig, jwksOverride);
+  const rateLimiter = new RateLimiter(authConfig);
+  const authAuditLogger = new AuthAuditLogger(logger, client, TEST_DB_NAME);
 
   const container: IAppContainer = {
     db: client,
@@ -67,6 +105,10 @@ export const startTestServer = async (): Promise<ITestServer> => {
     runningLogService,
     workoutExerciseRepository,
     workoutExerciseService,
+    jwksVerifier,
+    rateLimiter,
+    authAuditLogger,
+    authConfig,
   };
 
   const app = createApp(container);
@@ -77,11 +119,11 @@ export const startTestServer = async (): Promise<ITestServer> => {
   const baseUrl = `http://localhost:${port}`;
 
   const cleanup = async (): Promise<void> => {
-    await client.db(TEST_DB_NAME)
-.dropDatabase();
+    rateLimiter.destroy();
+    await client.db(TEST_DB_NAME).dropDatabase();
     await client.close();
     app.stop();
   };
 
-  return { app, baseUrl, cleanup };
+  return { app, baseUrl, cleanup, authToken };
 };

@@ -61,7 +61,7 @@ describe("ExerciseRouter", () => {
           equipmentRequired: [],
           instructions: "Do the squat",
         }),
-      })
+      }),
     );
     expect(res.status)
 .toBe(201);
@@ -76,7 +76,7 @@ describe("ExerciseRouter", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: "" }),
-      })
+      }),
     );
     expect(res.status)
 .toBe(400);
@@ -116,7 +116,7 @@ describe("ExerciseRouter", () => {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Updated Name" }),
-      })
+      }),
     );
     expect(res.status)
 .toBe(200);
@@ -127,7 +127,7 @@ describe("ExerciseRouter", () => {
 
   it("DELETE /exercises/:id should delete exercise", async () => {
     const res = await app.handle(
-      new Request("http://localhost/exercises/some-id", { method: "DELETE" })
+      new Request("http://localhost/exercises/some-id", { method: "DELETE" }),
     );
     expect(res.status)
 .toBe(200);
@@ -140,7 +140,7 @@ describe("ExerciseRouter", () => {
     mockService.delete = mock(() => Promise.resolve(err(new AppError("DB error", 500, "DB_ERROR"))));
     app = buildApp(mockService);
     const res = await app.handle(
-      new Request("http://localhost/exercises/some-id", { method: "DELETE" })
+      new Request("http://localhost/exercises/some-id", { method: "DELETE" }),
     );
     expect(res.status)
 .toBe(500);

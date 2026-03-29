@@ -24,5 +24,5 @@ export const createProgressMetricSchema = z.object({
   {
     message: "customMetricName is required when metricType is 'custom'",
     path: ["customMetricName"],
-  }
+  },
 );

@@ -10,8 +10,12 @@ import { RunningLogRepository } from "../features/running-logs/running-log.repos
 import { RunningLogService } from "../features/running-logs/running-log.service.mjs";
 import { WorkoutExerciseRepository } from "../features/workout-exercises/workout-exercise.repository.mjs";
 import { WorkoutExerciseService } from "../features/workout-exercises/workout-exercise.service.mjs";
+import { JwksVerifier } from "./auth/jwks-verifier.mjs";
+import { RateLimiter } from "./auth/rate-limiter.mjs";
+import { AuthAuditLogger } from "./auth/audit-logger.mjs";
 
 import type { MongoClient } from "mongodb";
+import type { IAuthConfig } from "./auth/interfaces/i-auth-config.mjs";
 
 export interface IAppContainer {
   db: MongoClient;
@@ -26,6 +30,21 @@ export interface IAppContainer {
   runningLogService: RunningLogService;
   workoutExerciseRepository: WorkoutExerciseRepository;
   workoutExerciseService: WorkoutExerciseService;
+  jwksVerifier: JwksVerifier;
+  rateLimiter: RateLimiter;
+  authAuditLogger: AuthAuditLogger;
+  authConfig: IAuthConfig;
+}
+
+export function buildAuthConfig(): IAuthConfig {
+  return {
+    jwksUrl: process.env["JWKS_URL"] ?? "http://localhost:3000/.well-known/jwks.json",
+    issuer: process.env["JWT_ISSUER"],
+    audience: process.env["JWT_AUDIENCE"],
+    publicPaths: ["/health", "/version", "/swagger", "/scalar"],
+    rateLimitIpPerMin: parseInt(process.env["RATE_LIMIT_IP_PER_MIN"] ?? "100", 10),
+    rateLimitUserPerMin: parseInt(process.env["RATE_LIMIT_USER_PER_MIN"] ?? "1000", 10),
+  };
 }
 
 let container: IAppContainer | null = null;
@@ -56,8 +75,13 @@ export const getContainer = async (): Promise<IAppContainer> => {
   const workoutExerciseService = new WorkoutExerciseService(
     workoutExerciseRepository,
     workoutService,
-    exerciseService
+    exerciseService,
   );
+
+  const authConfig = buildAuthConfig();
+  const jwksVerifier = new JwksVerifier(authConfig);
+  const rateLimiter = new RateLimiter(authConfig);
+  const authAuditLogger = new AuthAuditLogger(logger, db, dbName);
 
   container = {
     db,
@@ -72,6 +96,10 @@ export const getContainer = async (): Promise<IAppContainer> => {
     runningLogService,
     workoutExerciseRepository,
     workoutExerciseService,
+    jwksVerifier,
+    rateLimiter,
+    authAuditLogger,
+    authConfig,
   };
 
   logger.info("DI container initialized", { dbName });

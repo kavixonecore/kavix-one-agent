@@ -3,6 +3,7 @@ import { cors } from "@elysiajs/cors";
 import { openapi } from "@elysiajs/openapi";
 
 import { createTracePlugin, logger } from "./shared/logger.mjs";
+import { createAuthPlugin } from "./shared/auth/auth-plugin.mjs";
 import { createExerciseRouter } from "./features/exercises/exercise.router.mjs";
 import { createWorkoutRouter } from "./features/workouts/workout.router.mjs";
 import { createProgressMetricRouter } from "./features/progress-metrics/progress-metric.router.mjs";
@@ -23,7 +24,7 @@ export const createApp = (container?: IAppContainer): Elysia => {
       origin: ["http://localhost:4200"],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
-    })
+    }),
   );
 
   app.use(
@@ -45,7 +46,7 @@ export const createApp = (container?: IAppContainer): Elysia => {
           { name: "Workout Exercises", description: "Exercise-workout linking" },
         ],
       },
-    })
+    }),
   );
 
   app.get(
@@ -62,7 +63,7 @@ export const createApp = (container?: IAppContainer): Elysia => {
         summary: "Health check",
         description: "Returns server health status",
       },
-    }
+    },
   );
 
   app.get(
@@ -77,10 +78,16 @@ export const createApp = (container?: IAppContainer): Elysia => {
         summary: "Version info",
         description: "Returns the API version and environment",
       },
-    }
+    },
   );
 
   if (container) {
+    app.use(createAuthPlugin(container.authConfig, {
+      verifier: container.jwksVerifier,
+      rateLimiter: container.rateLimiter,
+      auditLogger: container.authAuditLogger,
+    }));
+
     app.use(createExerciseRouter(logger, container.exerciseService));
     app.use(createWorkoutRouter(logger, container.workoutService));
     app.use(createProgressMetricRouter(logger, container.progressMetricService));

@@ -108,7 +108,7 @@ export const createWorkoutRouter = (loggerInstance: Logger, service: WorkoutServ
           500: tErrorResponse,
         },
         detail: { tags: ["Workouts"], summary: "Create workout" },
-      }
+      },
     )
     .get(
       "/",
@@ -133,7 +133,7 @@ export const createWorkoutRouter = (loggerInstance: Logger, service: WorkoutServ
           500: tErrorResponse,
         },
         detail: { tags: ["Workouts"], summary: "List workouts with optional date range filter" },
-      }
+      },
     )
     .get(
       "/:id",
@@ -153,7 +153,7 @@ export const createWorkoutRouter = (loggerInstance: Logger, service: WorkoutServ
           500: tErrorResponse,
         },
         detail: { tags: ["Workouts"], summary: "Get workout by ID" },
-      }
+      },
     )
     .put(
       "/:id",
@@ -179,7 +179,7 @@ export const createWorkoutRouter = (loggerInstance: Logger, service: WorkoutServ
           500: tErrorResponse,
         },
         detail: { tags: ["Workouts"], summary: "Update workout" },
-      }
+      },
     )
     .delete(
       "/:id",
@@ -198,6 +198,6 @@ export const createWorkoutRouter = (loggerInstance: Logger, service: WorkoutServ
           500: tErrorResponse,
         },
         detail: { tags: ["Workouts"], summary: "Delete workout" },
-      }
+      },
     );
 };

@@ -59,7 +59,10 @@ describe("Progress Metrics Integration Tests", () => {
   it("POST /progress-metrics — creates weight entry, returns 201", async () => {
     const res = await fetch(`${server.baseUrl}/progress-metrics`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         metricType: "weight_lbs",
         value: 185.5,
@@ -89,7 +92,10 @@ describe("Progress Metrics Integration Tests", () => {
   it("POST /progress-metrics — creates custom metric with customMetricName, returns 201", async () => {
     const res = await fetch(`${server.baseUrl}/progress-metrics`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         metricType: "custom",
         value: 42,
@@ -115,7 +121,10 @@ describe("Progress Metrics Integration Tests", () => {
   it("POST /progress-metrics — custom metric without customMetricName returns 400", async () => {
     const res = await fetch(`${server.baseUrl}/progress-metrics`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         metricType: "custom",
         value: 10,
@@ -132,7 +141,9 @@ describe("Progress Metrics Integration Tests", () => {
   });
 
   it("GET /progress-metrics — returns list of all metrics", async () => {
-    const res = await fetch(`${server.baseUrl}/progress-metrics`);
+    const res = await fetch(`${server.baseUrl}/progress-metrics`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -146,7 +157,9 @@ describe("Progress Metrics Integration Tests", () => {
   });
 
   it("GET /progress-metrics/latest — returns latest of each type", async () => {
-    const res = await fetch(`${server.baseUrl}/progress-metrics/latest`);
+    const res = await fetch(`${server.baseUrl}/progress-metrics/latest`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -160,7 +173,9 @@ describe("Progress Metrics Integration Tests", () => {
   });
 
   it("GET /progress-metrics/by-type/weight_lbs — filters by metric type", async () => {
-    const res = await fetch(`${server.baseUrl}/progress-metrics/by-type/weight_lbs`);
+    const res = await fetch(`${server.baseUrl}/progress-metrics/by-type/weight_lbs`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -179,7 +194,8 @@ describe("Progress Metrics Integration Tests", () => {
 
   it("GET /progress-metrics/by-type/weight_lbs?startDate=...&endDate=... — with date range", async () => {
     const res = await fetch(
-      `${server.baseUrl}/progress-metrics/by-type/weight_lbs?startDate=${yesterday}&endDate=${tomorrow}`
+      `${server.baseUrl}/progress-metrics/by-type/weight_lbs?startDate=${yesterday}&endDate=${tomorrow}`,
+      { headers: { "Authorization": `Bearer ${server.authToken}` } },
     );
 
     expect(res.status)
@@ -196,7 +212,10 @@ describe("Progress Metrics Integration Tests", () => {
   it("PUT /progress-metrics/:id — updates value", async () => {
     const res = await fetch(`${server.baseUrl}/progress-metrics/${weightMetricId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({ value: 183.0 }),
     });
 
@@ -214,6 +233,7 @@ describe("Progress Metrics Integration Tests", () => {
   it("DELETE /progress-metrics/:id — deletes weight metric", async () => {
     const res = await fetch(`${server.baseUrl}/progress-metrics/${weightMetricId}`, {
       method: "DELETE",
+      headers: { "Authorization": `Bearer ${server.authToken}` },
     });
 
     expect(res.status)
@@ -228,6 +248,7 @@ describe("Progress Metrics Integration Tests", () => {
   it("DELETE /progress-metrics/:id — deletes custom metric", async () => {
     const res = await fetch(`${server.baseUrl}/progress-metrics/${customMetricId}`, {
       method: "DELETE",
+      headers: { "Authorization": `Bearer ${server.authToken}` },
     });
 
     expect(res.status)

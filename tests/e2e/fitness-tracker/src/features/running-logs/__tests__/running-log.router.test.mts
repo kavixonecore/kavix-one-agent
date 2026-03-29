@@ -58,7 +58,7 @@ describe("RunningLogRouter", () => {
           distanceMiles: 5.0,
           durationMinutes: 40,
         }),
-      })
+      }),
     );
     expect(res.status)
 .toBe(201);
@@ -73,7 +73,7 @@ describe("RunningLogRouter", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workoutId: "" }),
-      })
+      }),
     );
     expect(res.status)
 .toBe(400);
@@ -122,7 +122,7 @@ describe("RunningLogRouter", () => {
 
   it("DELETE /running-logs/:id should delete log", async () => {
     const res = await app.handle(
-      new Request("http://localhost/running-logs/some-id", { method: "DELETE" })
+      new Request("http://localhost/running-logs/some-id", { method: "DELETE" }),
     );
     expect(res.status)
 .toBe(200);

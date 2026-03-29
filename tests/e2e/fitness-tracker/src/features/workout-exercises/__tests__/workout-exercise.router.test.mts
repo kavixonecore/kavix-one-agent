@@ -56,7 +56,7 @@ describe("WorkoutExerciseRouter", () => {
           exerciseId: "exercise-1",
           order: 1,
         }),
-      })
+      }),
     );
     expect(res.status)
 .toBe(201);
@@ -71,7 +71,7 @@ describe("WorkoutExerciseRouter", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ workoutId: "" }),
-      })
+      }),
     );
     expect(res.status)
 .toBe(400);
@@ -113,7 +113,7 @@ describe("WorkoutExerciseRouter", () => {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ order: 2 }),
-      })
+      }),
     );
     expect(res.status)
 .toBe(200);
@@ -121,7 +121,7 @@ describe("WorkoutExerciseRouter", () => {
 
   it("DELETE /workout-exercises/:id should delete", async () => {
     const res = await app.handle(
-      new Request("http://localhost/workout-exercises/some-id", { method: "DELETE" })
+      new Request("http://localhost/workout-exercises/some-id", { method: "DELETE" }),
     );
     expect(res.status)
 .toBe(200);

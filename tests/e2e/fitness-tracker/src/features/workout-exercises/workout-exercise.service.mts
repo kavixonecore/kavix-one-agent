@@ -27,7 +27,7 @@ export class WorkoutExerciseService {
   public constructor(
     repository: WorkoutExerciseRepository,
     workoutService: WorkoutService,
-    exerciseService: ExerciseService
+    exerciseService: ExerciseService,
   ) {
     this.repository = repository;
     this.workoutService = workoutService;

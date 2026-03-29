@@ -74,7 +74,10 @@ describe("Workout Exercises Integration Tests", () => {
     // Create a workout
     const workoutRes = await fetch(`${server.baseUrl}/workouts`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         name: "Strength Workout",
         workoutType: "weightlifting",
@@ -88,7 +91,10 @@ describe("Workout Exercises Integration Tests", () => {
     // Create an exercise
     const exerciseRes = await fetch(`${server.baseUrl}/exercises`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         name: "Barbell Squat",
         description: "Compound lower body exercise",
@@ -109,7 +115,10 @@ describe("Workout Exercises Integration Tests", () => {
   it("POST /workout-exercises — creates link with valid IDs, returns 201", async () => {
     const res = await fetch(`${server.baseUrl}/workout-exercises`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         workoutId,
         exerciseId,
@@ -146,7 +155,10 @@ describe("Workout Exercises Integration Tests", () => {
   it("POST /workout-exercises — invalid workoutId returns error", async () => {
     const res = await fetch(`${server.baseUrl}/workout-exercises`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         workoutId: "01NONEXISTENTWORKOUTID00000",
         exerciseId,
@@ -164,7 +176,10 @@ describe("Workout Exercises Integration Tests", () => {
   it("POST /workout-exercises — invalid exerciseId returns error", async () => {
     const res = await fetch(`${server.baseUrl}/workout-exercises`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         workoutId,
         exerciseId: "01NONEXISTENTEXERCISEID0000",
@@ -180,7 +195,9 @@ describe("Workout Exercises Integration Tests", () => {
   });
 
   it("GET /workout-exercises — returns all workout exercises", async () => {
-    const res = await fetch(`${server.baseUrl}/workout-exercises`);
+    const res = await fetch(`${server.baseUrl}/workout-exercises`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -194,7 +211,9 @@ describe("Workout Exercises Integration Tests", () => {
   });
 
   it("GET /workout-exercises/workout/:workoutId — returns exercises for workout", async () => {
-    const res = await fetch(`${server.baseUrl}/workout-exercises/workout/${workoutId}`);
+    const res = await fetch(`${server.baseUrl}/workout-exercises/workout/${workoutId}`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -214,7 +233,10 @@ describe("Workout Exercises Integration Tests", () => {
   it("PUT /workout-exercises/:id — updates sets and reps", async () => {
     const res = await fetch(`${server.baseUrl}/workout-exercises/${workoutExerciseId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({ sets: 5, reps: 5, weightLbs: 205 }),
     });
 
@@ -236,6 +258,7 @@ describe("Workout Exercises Integration Tests", () => {
   it("DELETE /workout-exercises/:id — deletes workout exercise", async () => {
     const res = await fetch(`${server.baseUrl}/workout-exercises/${workoutExerciseId}`, {
       method: "DELETE",
+      headers: { "Authorization": `Bearer ${server.authToken}` },
     });
 
     expect(res.status)
@@ -248,7 +271,9 @@ describe("Workout Exercises Integration Tests", () => {
   });
 
   it("GET /workout-exercises/:id — deleted record returns 404", async () => {
-    const res = await fetch(`${server.baseUrl}/workout-exercises/${workoutExerciseId}`);
+    const res = await fetch(`${server.baseUrl}/workout-exercises/${workoutExerciseId}`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(404);

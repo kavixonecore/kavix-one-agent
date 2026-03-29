@@ -58,7 +58,10 @@ describe("Workouts Integration Tests", () => {
   it("POST /workouts — creates workout with valid body, returns 201", async () => {
     const res = await fetch(`${server.baseUrl}/workouts`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         name: "Morning Run",
         workoutType: "running",
@@ -89,7 +92,10 @@ describe("Workouts Integration Tests", () => {
   it("POST /workouts — invalid body returns 400", async () => {
     const res = await fetch(`${server.baseUrl}/workouts`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         name: "Missing type",
         date: today,
@@ -104,7 +110,9 @@ describe("Workouts Integration Tests", () => {
   });
 
   it("GET /workouts — returns list of workouts", async () => {
-    const res = await fetch(`${server.baseUrl}/workouts`);
+    const res = await fetch(`${server.baseUrl}/workouts`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -119,7 +127,8 @@ describe("Workouts Integration Tests", () => {
 
   it("GET /workouts?startDate=...&endDate=... — filters by date range", async () => {
     const res = await fetch(
-      `${server.baseUrl}/workouts?startDate=${yesterday}&endDate=${tomorrow}`
+      `${server.baseUrl}/workouts?startDate=${yesterday}&endDate=${tomorrow}`,
+      { headers: { "Authorization": `Bearer ${server.authToken}` } },
     );
 
     expect(res.status)
@@ -134,7 +143,9 @@ describe("Workouts Integration Tests", () => {
   });
 
   it("GET /workouts?status=planned — filters by status", async () => {
-    const res = await fetch(`${server.baseUrl}/workouts?status=planned`);
+    const res = await fetch(`${server.baseUrl}/workouts?status=planned`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -150,7 +161,9 @@ describe("Workouts Integration Tests", () => {
   });
 
   it("GET /workouts/:id — returns workout by ID", async () => {
-    const res = await fetch(`${server.baseUrl}/workouts/${createdId}`);
+    const res = await fetch(`${server.baseUrl}/workouts/${createdId}`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -164,7 +177,9 @@ describe("Workouts Integration Tests", () => {
   });
 
   it("GET /workouts/:id — nonexistent ID returns 404", async () => {
-    const res = await fetch(`${server.baseUrl}/workouts/01NONEXISTENTID000000000000`);
+    const res = await fetch(`${server.baseUrl}/workouts/01NONEXISTENTID000000000000`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(404);
@@ -176,7 +191,10 @@ describe("Workouts Integration Tests", () => {
   it("PUT /workouts/:id — updates status to completed", async () => {
     const res = await fetch(`${server.baseUrl}/workouts/${createdId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({ status: "completed" }),
     });
 
@@ -192,7 +210,9 @@ describe("Workouts Integration Tests", () => {
   });
 
   it("GET /workouts?status=completed — shows completed workout", async () => {
-    const res = await fetch(`${server.baseUrl}/workouts?status=completed`);
+    const res = await fetch(`${server.baseUrl}/workouts?status=completed`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -206,6 +226,7 @@ describe("Workouts Integration Tests", () => {
   it("DELETE /workouts/:id — deletes workout successfully", async () => {
     const res = await fetch(`${server.baseUrl}/workouts/${createdId}`, {
       method: "DELETE",
+      headers: { "Authorization": `Bearer ${server.authToken}` },
     });
 
     expect(res.status)
@@ -218,7 +239,9 @@ describe("Workouts Integration Tests", () => {
   });
 
   it("GET /workouts/:id — deleted workout returns 404", async () => {
-    const res = await fetch(`${server.baseUrl}/workouts/${createdId}`);
+    const res = await fetch(`${server.baseUrl}/workouts/${createdId}`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(404);

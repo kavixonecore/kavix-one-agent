@@ -57,7 +57,10 @@ describe("Exercises Integration Tests", () => {
   it("POST /exercises — creates exercise with valid body, returns 201", async () => {
     const res = await fetch(`${server.baseUrl}/exercises`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify(validExerciseBody),
     });
 
@@ -83,7 +86,10 @@ describe("Exercises Integration Tests", () => {
   it("POST /exercises — missing name returns 400", async () => {
     const res = await fetch(`${server.baseUrl}/exercises`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({
         description: "Missing name field",
         muscleGroup: "chest",
@@ -100,7 +106,9 @@ describe("Exercises Integration Tests", () => {
   });
 
   it("GET /exercises — returns array with count", async () => {
-    const res = await fetch(`${server.baseUrl}/exercises`);
+    const res = await fetch(`${server.baseUrl}/exercises`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -116,7 +124,9 @@ describe("Exercises Integration Tests", () => {
   });
 
   it("GET /exercises?muscleGroup=chest — filters by muscle group", async () => {
-    const res = await fetch(`${server.baseUrl}/exercises?muscleGroup=chest`);
+    const res = await fetch(`${server.baseUrl}/exercises?muscleGroup=chest`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -132,7 +142,9 @@ describe("Exercises Integration Tests", () => {
   });
 
   it("GET /exercises?name=bench — searches by name", async () => {
-    const res = await fetch(`${server.baseUrl}/exercises?name=bench`);
+    const res = await fetch(`${server.baseUrl}/exercises?name=bench`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -146,7 +158,9 @@ describe("Exercises Integration Tests", () => {
   });
 
   it("GET /exercises/:id — returns the created exercise", async () => {
-    const res = await fetch(`${server.baseUrl}/exercises/${createdId}`);
+    const res = await fetch(`${server.baseUrl}/exercises/${createdId}`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(200);
@@ -160,7 +174,9 @@ describe("Exercises Integration Tests", () => {
   });
 
   it("GET /exercises/:id — nonexistent ID returns 404", async () => {
-    const res = await fetch(`${server.baseUrl}/exercises/01NONEXISTENTID000000000000`);
+    const res = await fetch(`${server.baseUrl}/exercises/01NONEXISTENTID000000000000`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(404);
@@ -172,7 +188,10 @@ describe("Exercises Integration Tests", () => {
   it("PUT /exercises/:id — updates exercise name", async () => {
     const res = await fetch(`${server.baseUrl}/exercises/${createdId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({ name: "Incline Bench Press" }),
     });
 
@@ -190,7 +209,10 @@ describe("Exercises Integration Tests", () => {
   it("PUT /exercises/:id — invalid body returns 400", async () => {
     const res = await fetch(`${server.baseUrl}/exercises/${createdId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${server.authToken}`,
+      },
       body: JSON.stringify({ difficultyLevel: "super_hard" }),
     });
 
@@ -204,6 +226,7 @@ describe("Exercises Integration Tests", () => {
   it("DELETE /exercises/:id — deletes exercise successfully", async () => {
     const res = await fetch(`${server.baseUrl}/exercises/${createdId}`, {
       method: "DELETE",
+      headers: { "Authorization": `Bearer ${server.authToken}` },
     });
 
     expect(res.status)
@@ -216,7 +239,9 @@ describe("Exercises Integration Tests", () => {
   });
 
   it("GET /exercises/:id — deleted exercise returns 404", async () => {
-    const res = await fetch(`${server.baseUrl}/exercises/${createdId}`);
+    const res = await fetch(`${server.baseUrl}/exercises/${createdId}`, {
+      headers: { "Authorization": `Bearer ${server.authToken}` },
+    });
 
     expect(res.status)
 .toBe(404);

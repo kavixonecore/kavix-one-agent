@@ -342,6 +342,68 @@ export class ApiService {
 
 ---
 
+## Authentication
+
+All API endpoints require a valid JWT Bearer token **except** public paths.
+
+### Public Paths (No Auth Required)
+
+| Path | Notes |
+|------|-------|
+| `/health` | Health check |
+| `/version` | Version info |
+| `/swagger` | OpenAPI docs (Scalar UI) |
+| `/scalar` | Scalar API reference |
+
+### Sending Auth Headers
+
+All protected endpoints require:
+
+```typescript
+headers: {
+  "Authorization": `Bearer ${accessToken}`
+}
+```
+
+### Error Responses
+
+| Status | Meaning |
+|--------|---------|
+| 401 | Missing, invalid, or expired JWT |
+| 403 | Authenticated but missing required role |
+| 429 | Rate limit exceeded (IP: 100/min, User: 1000/min) |
+
+### Angular HTTP Interceptor Pattern
+
+```typescript
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+  private readonly auth = inject(AuthService); // your OIDC service
+
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    const token = this.auth.getAccessToken();
+    if (!token) return next.handle(req);
+
+    const authReq = req.clone({
+      setHeaders: { Authorization: `Bearer ${token}` },
+    });
+    return next.handle(authReq);
+  }
+}
+```
+
+### Environment Variables (API)
+
+```bash
+JWKS_URL=https://your-tenant.auth0.com/.well-known/jwks.json
+JWT_ISSUER=https://your-tenant.auth0.com/
+JWT_AUDIENCE=https://api.your-app.com
+RATE_LIMIT_IP_PER_MIN=100
+RATE_LIMIT_USER_PER_MIN=1000
+```
+
+---
+
 ## Starting the API for Development
 
 ```bash

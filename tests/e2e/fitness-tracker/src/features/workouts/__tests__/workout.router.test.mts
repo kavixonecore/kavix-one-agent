@@ -57,7 +57,7 @@ describe("WorkoutRouter", () => {
           status: "planned",
           date: "2024-01-15",
         }),
-      })
+      }),
     );
     expect(res.status)
 .toBe(201);
@@ -72,7 +72,7 @@ describe("WorkoutRouter", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: "" }),
-      })
+      }),
     );
     expect(res.status)
 .toBe(400);
@@ -91,7 +91,7 @@ describe("WorkoutRouter", () => {
 
   it("GET /workouts with date range should pass query params", async () => {
     const res = await app.handle(
-      new Request("http://localhost/workouts?startDate=2024-01-01&endDate=2024-01-31")
+      new Request("http://localhost/workouts?startDate=2024-01-01&endDate=2024-01-31"),
     );
     expect(res.status)
 .toBe(200);
@@ -117,7 +117,7 @@ describe("WorkoutRouter", () => {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Updated" }),
-      })
+      }),
     );
     expect(res.status)
 .toBe(200);
@@ -125,7 +125,7 @@ describe("WorkoutRouter", () => {
 
   it("DELETE /workouts/:id should delete workout", async () => {
     const res = await app.handle(
-      new Request("http://localhost/workouts/some-id", { method: "DELETE" })
+      new Request("http://localhost/workouts/some-id", { method: "DELETE" }),
     );
     expect(res.status)
 .toBe(200);

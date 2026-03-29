@@ -114,7 +114,7 @@ export const createExerciseRouter = (loggerInstance: Logger, service: ExerciseSe
           500: tErrorResponse,
         },
         detail: { tags: ["Exercises"], summary: "Create exercise" },
-      }
+      },
     )
     .get(
       "/",
@@ -139,7 +139,7 @@ export const createExerciseRouter = (loggerInstance: Logger, service: ExerciseSe
           500: tErrorResponse,
         },
         detail: { tags: ["Exercises"], summary: "List exercises" },
-      }
+      },
     )
     .get(
       "/:id",
@@ -159,7 +159,7 @@ export const createExerciseRouter = (loggerInstance: Logger, service: ExerciseSe
           500: tErrorResponse,
         },
         detail: { tags: ["Exercises"], summary: "Get exercise by ID" },
-      }
+      },
     )
     .put(
       "/:id",
@@ -185,7 +185,7 @@ export const createExerciseRouter = (loggerInstance: Logger, service: ExerciseSe
           500: tErrorResponse,
         },
         detail: { tags: ["Exercises"], summary: "Update exercise" },
-      }
+      },
     )
     .delete(
       "/:id",
@@ -204,6 +204,6 @@ export const createExerciseRouter = (loggerInstance: Logger, service: ExerciseSe
           500: tErrorResponse,
         },
         detail: { tags: ["Exercises"], summary: "Delete exercise" },
-      }
+      },
     );
 };

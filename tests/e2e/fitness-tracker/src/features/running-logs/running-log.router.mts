@@ -95,7 +95,7 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "Create running log" },
-      }
+      },
     )
     .get(
       "/",
@@ -120,7 +120,7 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "List running logs" },
-      }
+      },
     )
     .get(
       "/personal-bests",
@@ -139,7 +139,7 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "Get personal bests" },
-      }
+      },
     )
     .get(
       "/workout/:workoutId",
@@ -158,7 +158,7 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "Get running logs by workout ID" },
-      }
+      },
     )
     .get(
       "/:id",
@@ -177,7 +177,7 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "Get running log by ID" },
-      }
+      },
     )
     .put(
       "/:id",
@@ -203,7 +203,7 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "Update running log" },
-      }
+      },
     )
     .delete(
       "/:id",
@@ -222,6 +222,6 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
           500: tErrorResponse,
         },
         detail: { tags: ["Running Logs"], summary: "Delete running log" },
-      }
+      },
     );
 };

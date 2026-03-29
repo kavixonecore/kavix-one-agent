@@ -89,7 +89,7 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
           500: tErrorResponse,
         },
         detail: { tags: ["Workout Exercises"], summary: "Create workout exercise" },
-      }
+      },
     )
     .get(
       "/",
@@ -114,7 +114,7 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
           500: tErrorResponse,
         },
         detail: { tags: ["Workout Exercises"], summary: "List workout exercises" },
-      }
+      },
     )
     .get(
       "/workout/:workoutId",
@@ -134,7 +134,7 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
           500: tErrorResponse,
         },
         detail: { tags: ["Workout Exercises"], summary: "Get exercises for a workout" },
-      }
+      },
     )
     .get(
       "/:id",
@@ -153,7 +153,7 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
           500: tErrorResponse,
         },
         detail: { tags: ["Workout Exercises"], summary: "Get workout exercise by ID" },
-      }
+      },
     )
     .put(
       "/:id",
@@ -179,7 +179,7 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
           500: tErrorResponse,
         },
         detail: { tags: ["Workout Exercises"], summary: "Update workout exercise" },
-      }
+      },
     )
     .delete(
       "/:id",
@@ -198,6 +198,6 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
           500: tErrorResponse,
         },
         detail: { tags: ["Workout Exercises"], summary: "Delete workout exercise" },
-      }
+      },
     );
 };

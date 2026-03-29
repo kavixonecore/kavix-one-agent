@@ -81,7 +81,7 @@ export class ProgressMetricService {
   public async findByMetricType(
     metricType: string,
     startDate?: string,
-    endDate?: string
+    endDate?: string,
   ): Promise<Result<IProgressMetric[], AppError>> {
     return this.repository.findByMetricType(metricType as MetricTypeValue, startDate, endDate);
   }

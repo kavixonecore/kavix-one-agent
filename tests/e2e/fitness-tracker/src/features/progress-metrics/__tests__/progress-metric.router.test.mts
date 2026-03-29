@@ -59,7 +59,7 @@ describe("ProgressMetricRouter", () => {
           unit: "lbs",
           date: "2024-01-15",
         }),
-      })
+      }),
     );
     expect(res.status)
 .toBe(201);
@@ -113,7 +113,7 @@ describe("ProgressMetricRouter", () => {
 
   it("DELETE /progress-metrics/:id should delete metric", async () => {
     const res = await app.handle(
-      new Request("http://localhost/progress-metrics/some-id", { method: "DELETE" })
+      new Request("http://localhost/progress-metrics/some-id", { method: "DELETE" }),
     );
     expect(res.status)
 .toBe(200);
