@@ -24,7 +24,7 @@ export function renderServer(context: IGenerationContext): string {
 
   return `import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
-import { swagger } from "@elysiajs/swagger";
+import { openapi } from "@elysiajs/openapi";
 import type winston from "winston";
 
 import { tracePlugin } from "./plugins/trace.plugin.mjs";
@@ -45,9 +45,9 @@ ${routerMounts};
 
   return new Elysia()
     .use(cors())
-    .use(swagger({ path: "/docs" }))
+    .use(openapi({ path: "/swagger", provider: "scalar" }))
     .use(tracePlugin(logger))
-    .get("/", ({ redirect }) => redirect("/docs"))
+    .get("/", ({ redirect }) => redirect("/swagger"))
     .use(healthRouter())
     .use(versionRouter())
     .use(apiRoutes);

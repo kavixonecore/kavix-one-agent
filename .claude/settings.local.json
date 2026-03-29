@@ -52,7 +52,8 @@
       "Bash(MONGODB_URI=\"mongodb://admin:password@localhost:27017/fitness_tracker?authSource=admin\" bun test --timeout 30000)",
       "Bash(while read:*)",
       "Bash(do sed:*)",
-      "Bash(echo \"Fixed: $f\")"
+      "Bash(echo \"Fixed: $f\")",
+      "WebFetch(domain:elysiajs.com)"
     ]
   }
 }

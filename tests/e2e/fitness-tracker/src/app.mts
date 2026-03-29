@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
-import { swagger } from "@elysiajs/swagger";
+import { openapi } from "@elysiajs/openapi";
 
 import { createTracePlugin, logger } from "./shared/logger.mjs";
 import { createExerciseRouter } from "./features/exercises/exercise.router.mjs";
@@ -27,7 +27,9 @@ export const createApp = (container?: IAppContainer): Elysia => {
   );
 
   app.use(
-    swagger({
+    openapi({
+      path: "/swagger",
+      provider: "scalar",
       documentation: {
         info: {
           title: "Fitness Tracker API",

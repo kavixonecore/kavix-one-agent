@@ -130,9 +130,9 @@ describe("server.tmpl.mts", () => {
 .toContain(".use(cors())");
   });
 
-  it("uses swagger plugin", () => {
+  it("uses openapi plugin", () => {
     expect(output)
-.toContain(".use(swagger(");
+.toContain(".use(openapi(");
   });
 
   it("uses tracePlugin", () => {

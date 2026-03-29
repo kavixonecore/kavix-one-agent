@@ -22,7 +22,7 @@ export function renderPackageJson(context: IGenerationContext): string {
       },
       dependencies: {
         "@elysiajs/cors": "^1.3.3",
-        "@elysiajs/swagger": "^1.3.2",
+        "@elysiajs/openapi": "^1.3.2",
         "@sylvesterllc/mongo": "^1.0.0",
         "@sylvesterllc/utils": "^1.0.0",
         elysia: "^1.3.3",
