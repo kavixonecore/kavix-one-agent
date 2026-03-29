@@ -6,9 +6,63 @@ import { updateWorkoutExerciseSchema } from "./schemas/update-workout-exercise.s
 import { workoutExerciseQuerySchema } from "./schemas/workout-exercise-query.schema.mjs";
 import { AppError } from "../../shared/errors/index.mjs";
 
+const tWorkoutExerciseBody = t.Object({
+  workoutId: t.String({ minLength: 1 }),
+  exerciseId: t.String({ minLength: 1 }),
+  order: t.Number(),
+  sets: t.Optional(t.Number()),
+  reps: t.Optional(t.Number()),
+  weightLbs: t.Optional(t.Number()),
+  durationSeconds: t.Optional(t.Number()),
+  restSeconds: t.Optional(t.Number()),
+  notes: t.Optional(t.String({ maxLength: 2000 })),
+  userId: t.Optional(t.String()),
+});
+
+const tUpdateWorkoutExerciseBody = t.Object({
+  order: t.Optional(t.Number()),
+  sets: t.Optional(t.Number()),
+  reps: t.Optional(t.Number()),
+  weightLbs: t.Optional(t.Number()),
+  durationSeconds: t.Optional(t.Number()),
+  restSeconds: t.Optional(t.Number()),
+  notes: t.Optional(t.String({ maxLength: 2000 })),
+});
+
+const tWorkoutExerciseData = t.Object({
+  id: t.String(),
+  workoutId: t.String(),
+  exerciseId: t.String(),
+  order: t.Number(),
+  sets: t.Optional(t.Number()),
+  reps: t.Optional(t.Number()),
+  weightLbs: t.Optional(t.Number()),
+  durationSeconds: t.Optional(t.Number()),
+  restSeconds: t.Optional(t.Number()),
+  notes: t.Optional(t.String()),
+  userId: t.Optional(t.String()),
+  createdAt: t.String(),
+  updatedAt: t.String(),
+});
+
+const tErrorResponse = t.Object({ success: t.Boolean(), error: t.String() });
+
+const tWorkoutExerciseListQuery = t.Object({
+  workoutId: t.Optional(t.String()),
+  exerciseId: t.Optional(t.String()),
+  page: t.Optional(t.String()),
+  limit: t.Optional(t.String()),
+});
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: WorkoutExerciseService) => {
   return new Elysia({ prefix: "/workout-exercises" })
+    .onError({ as: "local" }, ({ code, set }) => {
+      if (code === "VALIDATION") {
+        set.status = 400;
+        return { success: false, error: "Validation error" };
+      }
+    })
     .post(
       "/",
       async ({ body, set }) => {
@@ -26,7 +80,12 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
         return { success: true, data: result.value };
       },
       {
-        body: t.Unknown(),
+        body: tWorkoutExerciseBody,
+        response: {
+          201: t.Object({ success: t.Boolean(), data: tWorkoutExerciseData }),
+          400: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Workout Exercises"], summary: "Create workout exercise" },
       },
     )
@@ -46,6 +105,12 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
         return { success: true, data: result.value.data, count: result.value.count };
       },
       {
+        query: tWorkoutExerciseListQuery,
+        response: {
+          200: t.Object({ success: t.Boolean(), data: t.Array(tWorkoutExerciseData), count: t.Number() }),
+          400: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Workout Exercises"], summary: "List workout exercises" },
       },
     )
@@ -61,6 +126,11 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
         return { success: true, data: result.value, count: result.value.length };
       },
       {
+        response: {
+          200: t.Object({ success: t.Boolean(), data: t.Array(tWorkoutExerciseData), count: t.Number() }),
+          404: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Workout Exercises"], summary: "Get exercises for a workout" },
       },
     )
@@ -75,6 +145,11 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
         return { success: true, data: result.value };
       },
       {
+        response: {
+          200: t.Object({ success: t.Boolean(), data: tWorkoutExerciseData }),
+          404: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Workout Exercises"], summary: "Get workout exercise by ID" },
       },
     )
@@ -94,7 +169,13 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
         return { success: true, data: result.value };
       },
       {
-        body: t.Unknown(),
+        body: tUpdateWorkoutExerciseBody,
+        response: {
+          200: t.Object({ success: t.Boolean(), data: tWorkoutExerciseData }),
+          400: tErrorResponse,
+          404: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Workout Exercises"], summary: "Update workout exercise" },
       },
     )
@@ -109,6 +190,11 @@ export const createWorkoutExerciseRouter = (loggerInstance: Logger, service: Wor
         return { success: true, data: { deleted: result.value } };
       },
       {
+        response: {
+          200: t.Object({ success: t.Boolean(), data: t.Object({ deleted: t.Boolean() }) }),
+          404: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Workout Exercises"], summary: "Delete workout exercise" },
       },
     );

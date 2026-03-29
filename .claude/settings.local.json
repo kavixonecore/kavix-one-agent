@@ -30,7 +30,18 @@
       "Bash(wc:*)",
       "Bash(sort:*)",
       "Bash(grep:*)",
-      "Bash(for:*)"
+      "Bash(for:*)",
+      "Skill(update-config)",
+      "Skill(ralph-loop:ralph-loop)",
+      "Bash(docker compose:*)",
+      "Bash(curl -s -v http://localhost:3000/)",
+      "Bash(curl:*)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "Bash(python3 -m json.tool)",
+      "Bash(find /c/projects/kavix-one/agent-one/tests/e2e/fitness-tracker/src/features/running-logs/types/ -name *.mts)",
+      "Bash(xargs cat:*)",
+      "mcp__plugin_playwright_playwright__browser_click"
     ]
   }
 }

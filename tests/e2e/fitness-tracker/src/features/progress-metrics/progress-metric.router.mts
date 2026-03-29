@@ -6,9 +6,74 @@ import { updateProgressMetricSchema } from "./schemas/update-progress-metric.sch
 import { progressMetricQuerySchema, metricTypeParamsSchema } from "./schemas/progress-metric-query.schema.mjs";
 import { AppError } from "../../shared/errors/index.mjs";
 
+const tMetricTypeUnion = t.Union([
+  t.Literal("weight_lbs"),
+  t.Literal("body_fat_pct"),
+  t.Literal("resting_heart_rate"),
+  t.Literal("custom"),
+]);
+
+const tProgressMetricBody = t.Object({
+  metricType: tMetricTypeUnion,
+  value: t.Number(),
+  unit: t.String({ minLength: 1, maxLength: 50 }),
+  date: t.String(),
+  customMetricName: t.Optional(t.String({ minLength: 1, maxLength: 200 })),
+  notes: t.Optional(t.String({ maxLength: 2000 })),
+  userId: t.Optional(t.String()),
+});
+
+const tUpdateProgressMetricBody = t.Object({
+  metricType: t.Optional(tMetricTypeUnion),
+  value: t.Optional(t.Number()),
+  unit: t.Optional(t.String({ minLength: 1, maxLength: 50 })),
+  date: t.Optional(t.String()),
+  customMetricName: t.Optional(t.String({ minLength: 1, maxLength: 200 })),
+  notes: t.Optional(t.String({ maxLength: 2000 })),
+});
+
+const tProgressMetricData = t.Object({
+  id: t.String(),
+  metricType: t.String(),
+  value: t.Number(),
+  unit: t.String(),
+  date: t.String(),
+  customMetricName: t.Optional(t.String()),
+  notes: t.Optional(t.String()),
+  userId: t.Optional(t.String()),
+  createdAt: t.String(),
+  updatedAt: t.String(),
+});
+
+const tErrorResponse = t.Object({ success: t.Boolean(), error: t.String() });
+
+const tProgressMetricListQuery = t.Object({
+  metricType: t.Optional(t.Union([
+    t.Literal("weight_lbs"),
+    t.Literal("body_fat_pct"),
+    t.Literal("resting_heart_rate"),
+    t.Literal("custom"),
+  ])),
+  startDate: t.Optional(t.String()),
+  endDate: t.Optional(t.String()),
+  page: t.Optional(t.String()),
+  limit: t.Optional(t.String()),
+});
+
+const tByTypeQuery = t.Object({
+  startDate: t.Optional(t.String()),
+  endDate: t.Optional(t.String()),
+});
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const createProgressMetricRouter = (loggerInstance: Logger, service: ProgressMetricService) => {
   return new Elysia({ prefix: "/progress-metrics" })
+    .onError({ as: "local" }, ({ code, set }) => {
+      if (code === "VALIDATION") {
+        set.status = 400;
+        return { success: false, error: "Validation error" };
+      }
+    })
     .post(
       "/",
       async ({ body, set }) => {
@@ -26,7 +91,12 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
         return { success: true, data: result.value };
       },
       {
-        body: t.Unknown(),
+        body: tProgressMetricBody,
+        response: {
+          201: t.Object({ success: t.Boolean(), data: tProgressMetricData }),
+          400: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Progress Metrics"], summary: "Create progress metric" },
       },
     )
@@ -46,6 +116,12 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
         return { success: true, data: result.value.data, count: result.value.count };
       },
       {
+        query: tProgressMetricListQuery,
+        response: {
+          200: t.Object({ success: t.Boolean(), data: t.Array(tProgressMetricData), count: t.Number() }),
+          400: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Progress Metrics"], summary: "List progress metrics" },
       },
     )
@@ -61,6 +137,10 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
         return { success: true, data: result.value, count: result.value.length };
       },
       {
+        response: {
+          200: t.Object({ success: t.Boolean(), data: t.Array(tProgressMetricData), count: t.Number() }),
+          500: tErrorResponse,
+        },
         detail: { tags: ["Progress Metrics"], summary: "Get latest metric of each type" },
       },
     )
@@ -84,6 +164,12 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
         return { success: true, data: result.value, count: result.value.length };
       },
       {
+        query: tByTypeQuery,
+        response: {
+          200: t.Object({ success: t.Boolean(), data: t.Array(tProgressMetricData), count: t.Number() }),
+          400: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Progress Metrics"], summary: "Get metrics by type" },
       },
     )
@@ -98,6 +184,11 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
         return { success: true, data: result.value };
       },
       {
+        response: {
+          200: t.Object({ success: t.Boolean(), data: tProgressMetricData }),
+          404: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Progress Metrics"], summary: "Get progress metric by ID" },
       },
     )
@@ -117,7 +208,13 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
         return { success: true, data: result.value };
       },
       {
-        body: t.Unknown(),
+        body: tUpdateProgressMetricBody,
+        response: {
+          200: t.Object({ success: t.Boolean(), data: tProgressMetricData }),
+          400: tErrorResponse,
+          404: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Progress Metrics"], summary: "Update progress metric" },
       },
     )
@@ -132,6 +229,11 @@ export const createProgressMetricRouter = (loggerInstance: Logger, service: Prog
         return { success: true, data: { deleted: result.value } };
       },
       {
+        response: {
+          200: t.Object({ success: t.Boolean(), data: t.Object({ deleted: t.Boolean() }) }),
+          404: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Progress Metrics"], summary: "Delete progress metric" },
       },
     );

@@ -6,9 +6,69 @@ import { updateRunningLogSchema } from "./schemas/update-running-log.schema.mjs"
 import { runningLogQuerySchema } from "./schemas/running-log-query.schema.mjs";
 import { AppError } from "../../shared/errors/index.mjs";
 
+const tRunningLogBody = t.Object({
+  workoutId: t.String({ minLength: 1 }),
+  distanceMiles: t.Number(),
+  durationMinutes: t.Number(),
+  paceMinutesPerMile: t.Optional(t.Number()),
+  routeName: t.Optional(t.String({ maxLength: 200 })),
+  elevationGainFeet: t.Optional(t.Number()),
+  heartRateAvg: t.Optional(t.Number()),
+  weather: t.Optional(t.String({ maxLength: 100 })),
+  notes: t.Optional(t.String({ maxLength: 2000 })),
+  userId: t.Optional(t.String()),
+});
+
+const tUpdateRunningLogBody = t.Object({
+  distanceMiles: t.Optional(t.Number()),
+  durationMinutes: t.Optional(t.Number()),
+  paceMinutesPerMile: t.Optional(t.Number()),
+  routeName: t.Optional(t.String({ maxLength: 200 })),
+  elevationGainFeet: t.Optional(t.Number()),
+  heartRateAvg: t.Optional(t.Number()),
+  weather: t.Optional(t.String({ maxLength: 100 })),
+  notes: t.Optional(t.String({ maxLength: 2000 })),
+});
+
+const tRunningLogData = t.Object({
+  id: t.String(),
+  workoutId: t.String(),
+  distanceMiles: t.Number(),
+  durationMinutes: t.Number(),
+  paceMinutesPerMile: t.Number(),
+  routeName: t.Optional(t.String()),
+  elevationGainFeet: t.Optional(t.Number()),
+  heartRateAvg: t.Optional(t.Number()),
+  weather: t.Optional(t.String()),
+  notes: t.Optional(t.String()),
+  userId: t.Optional(t.String()),
+  createdAt: t.String(),
+  updatedAt: t.String(),
+});
+
+const tErrorResponse = t.Object({ success: t.Boolean(), error: t.String() });
+
+const tRunningLogListQuery = t.Object({
+  workoutId: t.Optional(t.String()),
+  page: t.Optional(t.String()),
+  limit: t.Optional(t.String()),
+});
+
+const tPersonalBestsData = t.Object({
+  fastestPace: t.Union([t.Number(), t.Null()]),
+  longestDistance: t.Union([t.Number(), t.Null()]),
+  longestDuration: t.Union([t.Number(), t.Null()]),
+});
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const createRunningLogRouter = (loggerInstance: Logger, service: RunningLogService) => {
   return new Elysia({ prefix: "/running-logs" })
+    .onError({ as: "local" }, ({ code, set }) => {
+      if (code === "VALIDATION") {
+        set.status = 400;
+        return { success: false, error: "Validation error" };
+      }
+    })
     .post(
       "/",
       async ({ body, set }) => {
@@ -26,7 +86,12 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
         return { success: true, data: result.value };
       },
       {
-        body: t.Unknown(),
+        body: tRunningLogBody,
+        response: {
+          201: t.Object({ success: t.Boolean(), data: tRunningLogData }),
+          400: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Running Logs"], summary: "Create running log" },
       },
     )
@@ -46,6 +111,12 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
         return { success: true, data: result.value.data, count: result.value.count };
       },
       {
+        query: tRunningLogListQuery,
+        response: {
+          200: t.Object({ success: t.Boolean(), data: t.Array(tRunningLogData), count: t.Number() }),
+          400: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Running Logs"], summary: "List running logs" },
       },
     )
@@ -61,6 +132,10 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
         return { success: true, data: result.value };
       },
       {
+        response: {
+          200: t.Object({ success: t.Boolean(), data: tPersonalBestsData }),
+          500: tErrorResponse,
+        },
         detail: { tags: ["Running Logs"], summary: "Get personal bests" },
       },
     )
@@ -75,6 +150,11 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
         return { success: true, data: result.value, count: result.value.length };
       },
       {
+        response: {
+          200: t.Object({ success: t.Boolean(), data: t.Array(tRunningLogData), count: t.Number() }),
+          404: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Running Logs"], summary: "Get running logs by workout ID" },
       },
     )
@@ -89,6 +169,11 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
         return { success: true, data: result.value };
       },
       {
+        response: {
+          200: t.Object({ success: t.Boolean(), data: tRunningLogData }),
+          404: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Running Logs"], summary: "Get running log by ID" },
       },
     )
@@ -108,7 +193,13 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
         return { success: true, data: result.value };
       },
       {
-        body: t.Unknown(),
+        body: tUpdateRunningLogBody,
+        response: {
+          200: t.Object({ success: t.Boolean(), data: tRunningLogData }),
+          400: tErrorResponse,
+          404: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Running Logs"], summary: "Update running log" },
       },
     )
@@ -123,6 +214,11 @@ export const createRunningLogRouter = (loggerInstance: Logger, service: RunningL
         return { success: true, data: { deleted: result.value } };
       },
       {
+        response: {
+          200: t.Object({ success: t.Boolean(), data: t.Object({ deleted: t.Boolean() }) }),
+          404: tErrorResponse,
+          500: tErrorResponse,
+        },
         detail: { tags: ["Running Logs"], summary: "Delete running log" },
       },
     );
