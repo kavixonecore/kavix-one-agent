@@ -1,59 +1,64 @@
-import { Component, inject } from "@angular/core";
+import { Component, inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { ReactiveFormsModule, FormBuilder, FormGroup } from "@angular/forms";
+import { AuthService } from "@auth0/auth0-angular";
 import { MatCardModule } from "@angular/material/card";
 import { MatButtonModule } from "@angular/material/button";
-import { MatInputModule } from "@angular/material/input";
-import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatIconModule } from "@angular/material/icon";
-import { StorageService } from "../../../../core/services/storage.service";
-import { NotificationService } from "../../../../core/services/notification.service";
-import { STORAGE_KEYS } from "../../../../core/constants/storage-keys";
+import { MatDividerModule } from "@angular/material/divider";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { environment } from "../../../../../environments/environment";
 
 @Component({
-  selector: "app-dev-login",
+  selector: "app-login",
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
-    MatInputModule,
-    MatFormFieldModule,
     MatIconModule,
+    MatDividerModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: "./dev-login.component.html",
   styleUrl: "./dev-login.component.scss",
 })
 export class DevLoginComponent {
 
-  private readonly storage = inject(StorageService);
-  private readonly notify = inject(NotificationService);
-  private readonly fb = inject(FormBuilder);
+  private readonly auth = inject(AuthService);
+  readonly isLoading = signal(false);
 
-  protected readonly form: FormGroup = this.fb.group({
-    token: [""],
-  });
-
-  protected get currentToken(): string | null {
-    return this.storage.getRaw(STORAGE_KEYS.ACCESS_TOKEN);
+  loginWithGoogle(): void {
+    this.redirectWithConnection("google-oauth2");
   }
 
-  protected get hasToken(): boolean {
-    return this.currentToken !== null && this.currentToken !== "";
+  loginWithGitHub(): void {
+    this.redirectWithConnection("github");
   }
 
-  protected onSave(): void {
-    const token = (this.form.get("token")?.value as string)?.trim();
-    if (token) {
-      this.storage.setRaw(STORAGE_KEYS.ACCESS_TOKEN, token);
-      this.notify.success("Token saved");
-    }
+  loginWithApple(): void {
+    this.redirectWithConnection("apple");
   }
 
-  protected onClear(): void {
-    this.storage.removeRaw(STORAGE_KEYS.ACCESS_TOKEN);
-    this.form.reset();
-    this.notify.info("Token cleared");
+  loginWithMicrosoft(): void {
+    this.redirectWithConnection("windowslive");
+  }
+
+  loginDefault(): void {
+    this.isLoading.set(true);
+    this.auth.loginWithRedirect({
+      authorizationParams: {
+        organization: environment.auth0.organizationId,
+      },
+    });
+  }
+
+  private redirectWithConnection(connection: string): void {
+    this.isLoading.set(true);
+    this.auth.loginWithRedirect({
+      authorizationParams: {
+        organization: environment.auth0.organizationId,
+        connection,
+      },
+    });
   }
 }

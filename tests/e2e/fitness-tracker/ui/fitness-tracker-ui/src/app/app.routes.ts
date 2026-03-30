@@ -1,4 +1,5 @@
 import type { Routes } from "@angular/router";
+import { authGuard } from "./core/guards/auth.guard";
 
 export const routes: Routes = [
   {
@@ -8,6 +9,7 @@ export const routes: Routes = [
   },
   {
     path: "dashboard",
+    canActivate: [authGuard],
     loadComponent: () =>
       import("./features/dashboard/components/dashboard/dashboard.component").then(
         (m) => m.DashboardComponent,
@@ -15,6 +17,7 @@ export const routes: Routes = [
   },
   {
     path: "workouts",
+    canActivate: [authGuard],
     loadComponent: () =>
       import("./features/workouts/components/workout-list/workout-list.component").then(
         (m) => m.WorkoutListComponent,
@@ -22,6 +25,7 @@ export const routes: Routes = [
   },
   {
     path: "exercises",
+    canActivate: [authGuard],
     loadComponent: () =>
       import("./features/exercises/components/exercise-list/exercise-list.component").then(
         (m) => m.ExerciseListComponent,
@@ -29,6 +33,7 @@ export const routes: Routes = [
   },
   {
     path: "running",
+    canActivate: [authGuard],
     loadComponent: () =>
       import("./features/running/components/running-list/running-list.component").then(
         (m) => m.RunningListComponent,
@@ -36,6 +41,7 @@ export const routes: Routes = [
   },
   {
     path: "progress",
+    canActivate: [authGuard],
     loadComponent: () =>
       import("./features/progress/components/progress-list/progress-list.component").then(
         (m) => m.ProgressListComponent,
