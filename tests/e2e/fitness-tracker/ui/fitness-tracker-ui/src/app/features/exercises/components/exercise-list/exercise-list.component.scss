@@ -1,0 +1,38 @@
+.exercise-list {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  &__filters {
+    margin-bottom: 16px;
+  }
+
+  &__filter-form {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  &__grid {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  &__count {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.85rem;
+  }
+}
+
+.ag-theme-material {
+  --ag-row-hover-color: var(--mat-sys-surface-variant);
+  width: 100%;
+}

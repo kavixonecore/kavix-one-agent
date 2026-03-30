@@ -1,0 +1,10 @@
+<div class="error-alert">
+  <mat-icon class="error-alert__icon">error_outline</mat-icon>
+  <span class="error-alert__message">{{ message() }}</span>
+  @if (retryable()) {
+    <button mat-button color="primary" (click)="onRetry()">
+      <mat-icon>refresh</mat-icon>
+      Retry
+    </button>
+  }
+</div>

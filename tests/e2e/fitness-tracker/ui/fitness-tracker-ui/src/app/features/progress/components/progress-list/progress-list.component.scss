@@ -1,0 +1,40 @@
+.progress-list {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  &__charts {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  &__chart-card {
+    flex: 1;
+    min-width: 400px;
+    overflow: hidden;
+  }
+
+  &__grid {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  &__count {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.85rem;
+  }
+}
+
+.ag-theme-material {
+  --ag-row-hover-color: var(--mat-sys-surface-variant);
+  width: 100%;
+}

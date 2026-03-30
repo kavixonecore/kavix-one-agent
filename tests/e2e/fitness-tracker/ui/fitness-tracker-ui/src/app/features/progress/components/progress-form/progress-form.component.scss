@@ -1,0 +1,16 @@
+.progress-form {
+  margin-bottom: 16px;
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 500px;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+}

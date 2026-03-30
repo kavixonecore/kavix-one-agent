@@ -1,0 +1,147 @@
+<div class="dashboard">
+  <h1 class="dashboard__title">Dashboard</h1>
+
+  @if (state.loading()) {
+    <app-loading message="Loading dashboard..." />
+  }
+
+  @if (state.error(); as error) {
+    <app-error-alert [message]="error" (retry)="onRetry()" />
+  }
+
+  @if (!state.loading() && !state.error()) {
+    <!-- Summary Cards -->
+    <div class="dashboard__cards">
+      <mat-card class="dashboard__card">
+        <mat-card-content>
+          <div class="dashboard__card-inner">
+            <mat-icon class="dashboard__card-icon">fitness_center</mat-icon>
+            <div>
+              <p class="dashboard__card-label">Total Workouts</p>
+              <p class="dashboard__card-value">{{ state.totalWorkouts() }}</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="dashboard__card">
+        <mat-card-content>
+          <div class="dashboard__card-inner">
+            <mat-icon class="dashboard__card-icon">directions_run</mat-icon>
+            <div>
+              <p class="dashboard__card-label">Total Running Distance</p>
+              <p class="dashboard__card-value">{{ state.totalRunningDistance() | number:'1.1-1' }} mi</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="dashboard__card">
+        <mat-card-content>
+          <div class="dashboard__card-inner">
+            <mat-icon class="dashboard__card-icon">monitor_weight</mat-icon>
+            <div>
+              <p class="dashboard__card-label">Current Weight</p>
+              <p class="dashboard__card-value">
+                @if (state.currentWeight() !== null) {
+                  {{ state.currentWeight() }} lbs
+                } @else {
+                  N/A
+                }
+              </p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="dashboard__charts">
+      <mat-card class="dashboard__chart-card">
+        <mat-card-header>
+          <mat-card-title>Weekly Workout Frequency</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (state.weeklyFrequency().length > 0) {
+            <ngx-charts-bar-vertical
+              [results]="state.weeklyFrequency()"
+              [scheme]="barColorScheme"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showXAxisLabel]="true"
+              [showYAxisLabel]="true"
+              xAxisLabel="Week"
+              yAxisLabel="Workouts"
+              [view]="[500, 300]"
+            ></ngx-charts-bar-vertical>
+          } @else {
+            <p class="dashboard__empty">No workout data available</p>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="dashboard__chart-card">
+        <mat-card-header>
+          <mat-card-title>Workout Type Distribution</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (state.workoutTypeDistribution().length > 0) {
+            <ngx-charts-pie-chart
+              [results]="state.workoutTypeDistribution()"
+              [scheme]="pieColorScheme"
+              [labels]="true"
+              [doughnut]="true"
+              [view]="[400, 300]"
+            ></ngx-charts-pie-chart>
+          } @else {
+            <p class="dashboard__empty">No workout data available</p>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Recent Workouts -->
+    <mat-card class="dashboard__recent">
+      <mat-card-header>
+        <mat-card-title>Recent Workouts</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (state.recentWorkouts().length > 0) {
+          <mat-list>
+            @for (workout of state.recentWorkouts(); track workout.id) {
+              <mat-list-item>
+                <mat-icon matListItemIcon>fitness_center</mat-icon>
+                <span matListItemTitle>{{ workout.name }}</span>
+                <span matListItemLine>{{ workout.workoutType }} - {{ workout.date }} - {{ workout.status }}</span>
+              </mat-list-item>
+            }
+          </mat-list>
+        } @else {
+          <p class="dashboard__empty">No workouts yet</p>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Latest Metrics -->
+    <mat-card class="dashboard__recent">
+      <mat-card-header>
+        <mat-card-title>Latest Progress Metrics</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (state.latestMetrics().length > 0) {
+          <mat-list>
+            @for (metric of state.latestMetrics(); track metric.id) {
+              <mat-list-item>
+                <mat-icon matListItemIcon>trending_up</mat-icon>
+                <span matListItemTitle>{{ metric.metricType }}: {{ metric.value }} {{ metric.unit }}</span>
+                <span matListItemLine>{{ metric.date }}</span>
+              </mat-list-item>
+            }
+          </mat-list>
+        } @else {
+          <p class="dashboard__empty">No progress metrics yet</p>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

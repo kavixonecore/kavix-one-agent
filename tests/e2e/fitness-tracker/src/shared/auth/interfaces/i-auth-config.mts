@@ -13,6 +13,9 @@ export interface IAuthConfig {
   /** Expected JWT audience — optional, validates the `aud` claim when set */
   audience?: string;
 
+  /** When true, all paths bypass auth (dev mode only) */
+  skipAuth?: boolean;
+
   /** Path prefixes that bypass auth entirely (e.g. ["/health", "/swagger"]) */
   publicPaths: string[];
 

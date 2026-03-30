@@ -1,0 +1,43 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  &__brand {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-right: 16px;
+  }
+
+  &__links {
+    display: flex;
+    gap: 4px;
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: inherit !important;
+
+    &--active {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+    }
+  }
+
+  &__link-label {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  &__spacer {
+    flex: 1;
+  }
+}

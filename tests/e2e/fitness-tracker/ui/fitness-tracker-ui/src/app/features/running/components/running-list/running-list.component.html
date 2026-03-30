@@ -1,0 +1,91 @@
+<div class="running-list">
+  <div class="running-list__header">
+    <h1>Running Logs</h1>
+    <button mat-raised-button color="primary" (click)="state.openForm()">
+      <mat-icon>add</mat-icon> Log a Run
+    </button>
+  </div>
+
+  @if (state.formOpen()) {
+    <app-running-form />
+  }
+
+  @if (state.loading()) {
+    <app-loading message="Loading running data..." />
+  }
+
+  @if (state.error(); as error) {
+    <app-error-alert [message]="error" (retry)="onRetry()" />
+  }
+
+  @if (!state.loading() && !state.error()) {
+    <!-- Personal Bests -->
+    @if (state.personalBests(); as bests) {
+      <div class="running-list__bests">
+        <mat-card class="running-list__best-card">
+          <mat-card-content>
+            <mat-icon>speed</mat-icon>
+            <p class="running-list__best-label">Fastest Pace</p>
+            <p class="running-list__best-value">
+              {{ bests.fastestPace !== null ? (bests.fastestPace | number:'1.2-2') + ' min/mi' : 'N/A' }}
+            </p>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="running-list__best-card">
+          <mat-card-content>
+            <mat-icon>straighten</mat-icon>
+            <p class="running-list__best-label">Longest Distance</p>
+            <p class="running-list__best-value">
+              {{ bests.longestDistance !== null ? (bests.longestDistance | number:'1.2-2') + ' mi' : 'N/A' }}
+            </p>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="running-list__best-card">
+          <mat-card-content>
+            <mat-icon>timer</mat-icon>
+            <p class="running-list__best-label">Longest Duration</p>
+            <p class="running-list__best-value">
+              {{ bests.longestDuration !== null ? (bests.longestDuration | number:'1.0-0') + ' min' : 'N/A' }}
+            </p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    }
+
+    <!-- Pace Chart -->
+    @if (state.paceOverTime().length > 0) {
+      <mat-card class="running-list__chart">
+        <mat-card-header>
+          <mat-card-title>Pace Over Time</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <ngx-charts-line-chart
+            [results]="[{ name: 'Pace', series: state.paceOverTime() }]"
+            [scheme]="lineColorScheme"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showXAxisLabel]="true"
+            [showYAxisLabel]="true"
+            xAxisLabel="Date"
+            yAxisLabel="min/mi"
+            [view]="[800, 300]"
+          ></ngx-charts-line-chart>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Grid -->
+    <div class="running-list__grid">
+      <ag-grid-angular
+        class="ag-theme-material"
+        [rowData]="state.logs()"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [domLayout]="'autoHeight'"
+        [pagination]="true"
+        [paginationPageSize]="20"
+        (rowClicked)="onRowClicked($event)"
+      />
+    </div>
+  }
+</div>

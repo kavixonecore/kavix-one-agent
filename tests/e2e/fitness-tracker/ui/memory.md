@@ -302,43 +302,84 @@ const MetricType = {
 
 ---
 
-## Angular Standards (from CLAUDE.md)
+## Angular Standards (Updated 2026-03-29)
 
-- Standalone components only (no NgModules)
-- Separate HTML and stylesheet files (no inline templates)
-- Signals for state management (not RxJS subjects)
-- `inject()` API for DI (not constructor injection)
-- Zoneless change detection (`provideZonelessChangeDetection()`)
-- `takeUntilDestroyed(destroyRef)` for subscription cleanup
-- SCSS only, CSS variables for theming, Flexbox for layout
-- Angular Material for UI components
-- Chart.js / ng2-charts for charts
+### Architecture
+- **Angular 21** with standalone components only (no NgModules)
+- 3-file layout: every component has `.ts`, `.html`, `.scss` in separate files
+- **Signals via Services** -- feature state service with private object signal, computed getters, `_patch()` helper
+- `inject()` for DI, never constructor injection
+- **Zoneless change detection** (`provideZonelessChangeDetection()`)
+- `takeUntilDestroyed(destroyRef)` for subscriptions
+- All routes lazy-loaded in `app.routes.ts`
+- Feature-first folder structure: `features/`, `state-management/`, `interfaces/`, `core/`
+- Barrels (`index.ts`) in every folder
+- All methods <= 25 lines
+- ReactiveFormsModule only (MVVM pattern)
 - `import type` for compile-time only imports
-- State services per page: `{page}-state.service.ts`
-- API service: single `api.service.ts` with typed methods
 
----
+### UI Libraries
+- **SCSS** (no Tailwind)
+- **Angular Material** for UI components
+- **ag-grid-community** for all data tables
+- **@swimlane/ngx-charts** for charts (bar, line, pie)
+- **Luxon** for date handling
 
-## Angular Service Pattern
+### Core Services (in `core/`)
+- `ApiService` -- single service, typed methods for all endpoints
+- `StorageService` -- localStorage wrapper with `app-` prefix
+- `LoggerService` -- structured logging, errors persisted to localStorage
+- `NotificationService` -- wraps Angular Material snackbar
+- `GlobalErrorHandler` -- implements `ErrorHandler`
+- `authInterceptor` -- functional `HttpInterceptorFn`, reads token from StorageService
+- `retryInterceptor` -- 3x retry with exponential backoff
+- `errorInterceptor` -- catches HTTP errors, logs + notifies
+
+### State Pattern
+
+```typescript
+@Injectable({ providedIn: "root" })
+export class FeatureState {
+  private readonly _state = signal<FeatureData>(INITIAL);
+  readonly items = computed(() => this._state().items);
+  readonly loading = computed(() => this._state().loading);
+  readonly error = computed(() => this._state().error);
+
+  private _patch(partial: Partial<FeatureData>): void {
+    this._state.update((s) => ({ ...s, ...partial }));
+  }
+}
+```
+
+### API Service Pattern
 
 ```typescript
 @Injectable({ providedIn: "root" })
 export class ApiService {
-
   private readonly http = inject(HttpClient);
-  private readonly base = "";  // proxy handles routing
 
-  getExercises(params?: ExerciseQuery): Observable<ApiResponse<IExercise[]>> {
-    return this.http.get<ApiResponse<IExercise[]>>("/exercises", { params: params as Record<string, string> });
+  getExercises(query?: IExerciseQuery): Observable<ApiResponse<IExercise[]>> {
+    const params = this.buildParams(query);
+    return this.http.get<ApiResponse<IExercise[]>>("/exercises", { params });
   }
 
-  createExercise(body: CreateExercise): Observable<ApiResponse<IExercise>> {
-    return this.http.post<ApiResponse<IExercise>>("/exercises", body);
+  private buildParams(query?: object | null): HttpParams {
+    let params = new HttpParams();
+    if (!query) return params;
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined && value !== null && value !== "") {
+        params = params.set(key, String(value));
+      }
+    }
+    return params;
   }
-
-  // ... same pattern for all entities
 }
 ```
+
+### Auth
+- JWT stored in localStorage via `STORAGE_KEYS.ACCESS_TOKEN`
+- Dev login page at `/auth/login` for pasting JWT tokens
+- `authInterceptor` adds `Authorization: Bearer` header
 
 ---
 

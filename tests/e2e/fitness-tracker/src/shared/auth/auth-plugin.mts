@@ -52,7 +52,7 @@ async function resolveAuthState(
 ): Promise<IAuthState> {
   const requestCtx = buildRequestContext(request);
 
-  if (isPublicPath(requestCtx.path, config.publicPaths)) {
+  if (config.skipAuth || isPublicPath(requestCtx.path, config.publicPaths)) {
     return { authUser: undefined, authError: undefined };
   }
 

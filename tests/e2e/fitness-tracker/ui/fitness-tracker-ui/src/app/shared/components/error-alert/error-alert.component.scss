@@ -1,0 +1,18 @@
+.error-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+  border-radius: 8px;
+  margin: 16px 0;
+
+  &__icon {
+    color: var(--mat-sys-error);
+  }
+
+  &__message {
+    flex: 1;
+  }
+}

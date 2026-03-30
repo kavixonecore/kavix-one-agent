@@ -1,0 +1,22 @@
+.running-form {
+  margin-bottom: 16px;
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 500px;
+  }
+
+  &__pace {
+    color: var(--mat-sys-primary);
+    font-weight: 600;
+    margin: 4px 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+}

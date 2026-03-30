@@ -1,0 +1,58 @@
+<div class="exercise-list">
+  <div class="exercise-list__header">
+    <h1>Exercises</h1>
+    <button mat-raised-button color="primary" (click)="state.openForm()">
+      <mat-icon>add</mat-icon> New Exercise
+    </button>
+  </div>
+
+  @if (state.formOpen()) {
+    <app-exercise-form />
+  }
+
+  <mat-card class="exercise-list__filters">
+    <mat-card-content>
+      <form [formGroup]="filterForm" class="exercise-list__filter-form">
+        <mat-form-field>
+          <mat-label>Search by Name</mat-label>
+          <input matInput formControlName="name" placeholder="Exercise name" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Muscle Group</mat-label>
+          <mat-select formControlName="muscleGroup">
+            <mat-option value="">All</mat-option>
+            @for (mg of muscleGroups; track mg) {
+              <mat-option [value]="mg">{{ mg }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <button mat-button color="primary" (click)="onFilter()">Filter</button>
+        <button mat-button (click)="onClear()">Clear</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  @if (state.loading()) {
+    <app-loading message="Loading exercises..." />
+  }
+
+  @if (state.error(); as error) {
+    <app-error-alert [message]="error" (retry)="onRetry()" />
+  }
+
+  @if (!state.loading() && !state.error()) {
+    <div class="exercise-list__grid">
+      <ag-grid-angular
+        class="ag-theme-material"
+        [rowData]="state.exercises()"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [domLayout]="'autoHeight'"
+        [pagination]="true"
+        [paginationPageSize]="20"
+        (rowClicked)="onRowClicked($event)"
+      />
+    </div>
+    <p class="exercise-list__count">Total: {{ state.count() }} exercises</p>
+  }
+</div>

@@ -1,0 +1,82 @@
+<div class="progress-list">
+  <div class="progress-list__header">
+    <h1>Progress Metrics</h1>
+    <button mat-raised-button color="primary" (click)="state.openForm()">
+      <mat-icon>add</mat-icon> Add Metric
+    </button>
+  </div>
+
+  @if (state.formOpen()) {
+    <app-progress-form />
+  }
+
+  @if (state.loading()) {
+    <app-loading message="Loading progress data..." />
+  }
+
+  @if (state.error(); as error) {
+    <app-error-alert [message]="error" (retry)="onRetry()" />
+  }
+
+  @if (!state.loading() && !state.error()) {
+    <!-- Charts -->
+    <div class="progress-list__charts">
+      @if (state.weightChartData().length > 0) {
+        <mat-card class="progress-list__chart-card">
+          <mat-card-header>
+            <mat-card-title>Weight Trend</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <ngx-charts-line-chart
+              [results]="[{ name: 'Weight (lbs)', series: state.weightChartData() }]"
+              [scheme]="lineColorScheme"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showXAxisLabel]="true"
+              [showYAxisLabel]="true"
+              xAxisLabel="Date"
+              yAxisLabel="Weight (lbs)"
+              [view]="[500, 300]"
+            ></ngx-charts-line-chart>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      @if (state.bodyFatChartData().length > 0) {
+        <mat-card class="progress-list__chart-card">
+          <mat-card-header>
+            <mat-card-title>Body Fat Trend</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <ngx-charts-line-chart
+              [results]="[{ name: 'Body Fat (%)', series: state.bodyFatChartData() }]"
+              [scheme]="lineColorScheme"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showXAxisLabel]="true"
+              [showYAxisLabel]="true"
+              xAxisLabel="Date"
+              yAxisLabel="Body Fat (%)"
+              [view]="[500, 300]"
+            ></ngx-charts-line-chart>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+
+    <!-- Grid -->
+    <div class="progress-list__grid">
+      <ag-grid-angular
+        class="ag-theme-material"
+        [rowData]="state.metrics()"
+        [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef"
+        [domLayout]="'autoHeight'"
+        [pagination]="true"
+        [paginationPageSize]="20"
+        (rowClicked)="onRowClicked($event)"
+      />
+    </div>
+    <p class="progress-list__count">Total: {{ state.count() }} metrics</p>
+  }
+</div>

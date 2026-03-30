@@ -41,6 +41,7 @@ export function buildAuthConfig(): IAuthConfig {
     jwksUrl: process.env["JWKS_URL"] ?? "http://localhost:3000/.well-known/jwks.json",
     issuer: process.env["JWT_ISSUER"],
     audience: process.env["JWT_AUDIENCE"],
+    skipAuth: process.env["SKIP_AUTH"] === "true",
     publicPaths: ["/health", "/version", "/swagger", "/scalar"],
     rateLimitIpPerMin: parseInt(process.env["RATE_LIMIT_IP_PER_MIN"] ?? "100", 10),
     rateLimitUserPerMin: parseInt(process.env["RATE_LIMIT_USER_PER_MIN"] ?? "1000", 10),

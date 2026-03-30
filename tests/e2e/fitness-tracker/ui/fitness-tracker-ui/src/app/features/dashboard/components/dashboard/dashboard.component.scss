@@ -1,0 +1,71 @@
+.dashboard {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  &__title {
+    margin-bottom: 24px;
+    font-size: 1.8rem;
+  }
+
+  &__cards {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  &__card {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  &__card-inner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 0;
+  }
+
+  &__card-icon {
+    font-size: 2rem;
+    width: 40px;
+    height: 40px;
+    color: var(--mat-sys-primary);
+  }
+
+  &__card-label {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__card-value {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+
+  &__charts {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  &__chart-card {
+    flex: 1;
+    min-width: 400px;
+    overflow: hidden;
+  }
+
+  &__recent {
+    margin-bottom: 24px;
+  }
+
+  &__empty {
+    padding: 16px;
+    color: var(--mat-sys-on-surface-variant);
+    text-align: center;
+  }
+}

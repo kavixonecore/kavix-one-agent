@@ -31,6 +31,7 @@ services:
       PORT: "3000"
       NODE_ENV: development
       LOG_LEVEL: info
+      SKIP_AUTH: "true"
       # Auth — set these for your OIDC provider
       # JWKS_URL: https://your-tenant.auth0.com/.well-known/jwks.json
       # JWT_ISSUER: https://your-tenant.auth0.com/

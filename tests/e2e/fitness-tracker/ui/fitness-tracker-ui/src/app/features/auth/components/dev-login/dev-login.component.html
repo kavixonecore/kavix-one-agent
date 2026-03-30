@@ -1,0 +1,33 @@
+<div class="dev-login">
+  <mat-card class="dev-login__card">
+    <mat-card-header>
+      <mat-card-title>Dev Token Manager</mat-card-title>
+      <mat-card-subtitle>Paste a JWT token for API authentication</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" class="dev-login__form">
+        <mat-form-field class="dev-login__field">
+          <mat-label>JWT Token</mat-label>
+          <textarea matInput formControlName="token" rows="6" placeholder="Paste your JWT token here..."></textarea>
+        </mat-form-field>
+
+        <div class="dev-login__status">
+          @if (hasToken) {
+            <p class="dev-login__active">Token is set ({{ currentToken!.length }} characters)</p>
+          } @else {
+            <p class="dev-login__inactive">No token set</p>
+          }
+        </div>
+
+        <div class="dev-login__actions">
+          <button mat-raised-button color="primary" (click)="onSave()">
+            <mat-icon>save</mat-icon> Save Token
+          </button>
+          <button mat-button color="warn" (click)="onClear()">
+            <mat-icon>delete</mat-icon> Clear Token
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
