@@ -68,7 +68,8 @@
       "Bash(netstat -ano)",
       "Bash(do taskkill:*)",
       "Bash(find D:/projects/kavixone/kavix-one-agent/tests/e2e/fitness-tracker -type f \\\\\\(-name *auth* -o -name *Auth0* -o -name *0auth* \\\\\\))",
-      "Bash(find D:/projects/kavixone/kavix-one-agent/tests/e2e/fitness-tracker -maxdepth 2 -type f \\\\\\(-name *.env* -o -name *config* -o -name settings.json \\\\\\))"
+      "Bash(find D:/projects/kavixone/kavix-one-agent/tests/e2e/fitness-tracker -maxdepth 2 -type f \\\\\\(-name *.env* -o -name *config* -o -name settings.json \\\\\\))",
+      "Bash(node screenshot.mjs)"
     ]
   }
 }
