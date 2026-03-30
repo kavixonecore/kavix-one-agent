@@ -1,0 +1,19 @@
+.form-card {
+  margin-bottom: 16px;
+  max-width: 400px;
+
+  mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}

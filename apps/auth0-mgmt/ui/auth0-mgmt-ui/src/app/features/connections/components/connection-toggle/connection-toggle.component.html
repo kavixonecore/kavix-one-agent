@@ -1,0 +1,23 @@
+<mat-card class="connection-card" [class.enabled]="enabled()">
+  <mat-card-header>
+    <mat-card-title>{{ name() }}</mat-card-title>
+    <mat-chip>{{ strategy() }}</mat-chip>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="toggle-row">
+      <span>Enabled</span>
+      <mat-slide-toggle
+        [checked]="enabled()"
+        (change)="onEnabledToggle($event.checked)">
+      </mat-slide-toggle>
+    </div>
+    <div class="toggle-row">
+      <span>Auto-assign membership on login</span>
+      <mat-slide-toggle
+        [checked]="assignMembershipOnLogin()"
+        [disabled]="!enabled()"
+        (change)="onAutoMembershipToggle($event.checked)">
+      </mat-slide-toggle>
+    </div>
+  </mat-card-content>
+</mat-card>

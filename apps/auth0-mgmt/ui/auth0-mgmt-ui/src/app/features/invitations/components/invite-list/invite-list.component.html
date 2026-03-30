@@ -1,0 +1,26 @@
+<div class="section-header">
+  <h2>Invitations</h2>
+  <button mat-flat-button color="primary" (click)="toggleForm()">
+    <mat-icon>mail</mat-icon>
+    Send Invite
+  </button>
+</div>
+
+@if (showForm) {
+  <app-invite-form [orgId]="orgId()" (saved)="toggleForm()"></app-invite-form>
+}
+
+@if (state.loading()) {
+  <app-loading></app-loading>
+} @else {
+  <div class="grid-wrapper">
+    <ag-grid-angular
+      class="ag-theme-material"
+      [rowData]="state.invitations()"
+      [columnDefs]="columnDefs"
+      [pagination]="true"
+      [paginationPageSize]="20"
+      style="width: 100%; height: 400px;">
+    </ag-grid-angular>
+  </div>
+}

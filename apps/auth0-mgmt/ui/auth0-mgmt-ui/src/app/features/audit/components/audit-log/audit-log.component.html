@@ -1,0 +1,57 @@
+<div class="page-header">
+  <h1>Audit Log</h1>
+</div>
+
+<div class="filter-bar">
+  <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+    <mat-form-field appearance="outline">
+      <mat-label>Org ID</mat-label>
+      <input matInput formControlName="orgId">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>User ID</mat-label>
+      <input matInput formControlName="userId">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Event</mat-label>
+      <input matInput formControlName="event">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Start Date</mat-label>
+      <input matInput formControlName="startDate" type="date">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>End Date</mat-label>
+      <input matInput formControlName="endDate" type="date">
+    </mat-form-field>
+    <div class="filter-actions">
+      <button mat-flat-button color="primary" type="submit">
+        <mat-icon>search</mat-icon>
+        Filter
+      </button>
+      <button mat-stroked-button type="button" (click)="resetFilters()">
+        <mat-icon>clear</mat-icon>
+        Reset
+      </button>
+    </div>
+  </form>
+</div>
+
+@if (state.loading()) {
+  <app-loading></app-loading>
+} @else {
+  <div class="grid-wrapper">
+    <ag-grid-angular
+      class="ag-theme-material"
+      [rowData]="state.entries()"
+      [columnDefs]="columnDefs"
+      [pagination]="true"
+      [paginationPageSize]="50"
+      style="width: 100%; height: 600px;">
+    </ag-grid-angular>
+  </div>
+}
+
+@if (state.error()) {
+  <p class="error-text">{{ state.error() }}</p>
+}

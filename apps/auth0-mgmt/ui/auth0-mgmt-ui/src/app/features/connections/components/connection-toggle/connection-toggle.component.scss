@@ -1,0 +1,26 @@
+.connection-card {
+  border: 1px solid var(--border-color, #e0e0e0);
+  transition: border-color 0.2s;
+
+  &.enabled {
+    border-color: var(--primary-color, #6c63ff);
+  }
+
+  mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--border-color, #f0f0f0);
+  }
+}

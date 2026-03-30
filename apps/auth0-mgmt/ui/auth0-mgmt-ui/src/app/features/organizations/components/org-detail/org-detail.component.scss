@@ -1,0 +1,23 @@
+.detail-header {
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0 0 4px;
+  }
+
+  .org-id {
+    color: var(--text-secondary, #888);
+    font-size: 13px;
+    margin: 0;
+  }
+}
+
+.tab-content {
+  padding: 16px 0;
+}
+
+.error-text {
+  color: var(--error-color, #f44336);
+}

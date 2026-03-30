@@ -1,0 +1,30 @@
+@if (state.loading()) {
+  <app-loading></app-loading>
+} @else if (state.selectedOrg(); as org) {
+  <div class="detail-header">
+    <div>
+      <h1>{{ org.displayName }}</h1>
+      <p class="org-id">{{ org.name }} &middot; {{ org.id }}</p>
+    </div>
+  </div>
+
+  <mat-tab-group>
+    <mat-tab label="Members">
+      <div class="tab-content">
+        <app-member-list [orgId]="orgId"></app-member-list>
+      </div>
+    </mat-tab>
+    <mat-tab label="Connections">
+      <div class="tab-content">
+        <app-connection-list [orgId]="orgId"></app-connection-list>
+      </div>
+    </mat-tab>
+    <mat-tab label="Invitations">
+      <div class="tab-content">
+        <app-invite-list [orgId]="orgId"></app-invite-list>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+} @else if (state.error()) {
+  <p class="error-text">{{ state.error() }}</p>
+}

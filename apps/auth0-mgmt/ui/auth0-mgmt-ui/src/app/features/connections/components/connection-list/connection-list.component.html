@@ -1,0 +1,24 @@
+<div class="section-header">
+  <h2>Connections</h2>
+</div>
+
+@if (state.loading()) {
+  <app-loading></app-loading>
+} @else {
+  <div class="connection-grid">
+    @for (conn of state.connectionStatus(); track conn.id) {
+      <app-connection-toggle
+        [orgId]="orgId()"
+        [connectionId]="conn.id"
+        [name]="conn.name"
+        [strategy]="conn.strategy"
+        [enabled]="conn.enabled"
+        [assignMembershipOnLogin]="conn.assignMembershipOnLogin">
+      </app-connection-toggle>
+    }
+
+    @if (state.connectionStatus().length === 0) {
+      <p class="no-data">No connections found in the tenant.</p>
+    }
+  </div>
+}

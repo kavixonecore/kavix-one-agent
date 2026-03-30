@@ -1,0 +1,34 @@
+<div class="section-header">
+  <h2>Members</h2>
+  <button mat-flat-button color="primary" (click)="toggleForm()">
+    <mat-icon>person_add</mat-icon>
+    Add Member
+  </button>
+</div>
+
+@if (showForm) {
+  <app-member-form [orgId]="orgId()" (saved)="toggleForm()"></app-member-form>
+}
+
+@if (selectedUserId) {
+  <app-role-assign
+    [orgId]="orgId()"
+    [userId]="selectedUserId"
+    (closed)="selectedUserId = null">
+  </app-role-assign>
+}
+
+@if (state.loading()) {
+  <app-loading></app-loading>
+} @else {
+  <div class="grid-wrapper">
+    <ag-grid-angular
+      class="ag-theme-material"
+      [rowData]="state.members()"
+      [columnDefs]="columnDefs"
+      [pagination]="true"
+      [paginationPageSize]="20"
+      style="width: 100%; height: 400px;">
+    </ag-grid-angular>
+  </div>
+}

@@ -1,0 +1,33 @@
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+
+  h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+
+.grid-wrapper {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color, #e0e0e0);
+}
+
+:host ::ng-deep {
+  .grid-btn {
+    padding: 4px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+  }
+
+  .del-btn {
+    background: var(--error-color, #f44336);
+    color: #fff;
+  }
+}

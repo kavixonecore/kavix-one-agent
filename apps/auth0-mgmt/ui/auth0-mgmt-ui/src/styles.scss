@@ -1,0 +1,48 @@
+@use '@angular/material' as mat;
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+:root {
+  --primary-color: #6c63ff;
+  --sidebar-bg: #1a1a2e;
+  --sidebar-text: #e0e0e0;
+  --bg-primary: #fafafa;
+  --text-primary: #333;
+  --text-secondary: #666;
+  --border-color: #e0e0e0;
+  --error-color: #f44336;
+  --success-color: #4caf50;
+}
+
+html {
+  @include mat.theme((
+    color: (
+      primary: mat.$violet-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+.ag-theme-material {
+  --ag-font-family: Roboto, "Helvetica Neue", sans-serif;
+  --ag-font-size: 14px;
+  --ag-header-font-size: 13px;
+  --ag-row-height: 48px;
+  --ag-header-height: 48px;
+}
+
+.snack-success {
+  --mdc-snackbar-container-color: var(--success-color);
+  --mdc-snackbar-supporting-text-color: #fff;
+}
+
+.snack-error {
+  --mdc-snackbar-container-color: var(--error-color);
+  --mdc-snackbar-supporting-text-color: #fff;
+}
