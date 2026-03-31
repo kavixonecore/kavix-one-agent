@@ -132,7 +132,8 @@ Existing code generators (Yeoman, Hygen, plop) produce flat scaffolds without un
 - [ ] **Must:** Generate router factories as exported functions receiving (logger, service, config) returning new Elysia({ prefix })
 - [ ] **Must:** Generate getContainer() IoC pattern returning { db, databaseConfig, repositories, services, helpers }
 - [ ] **Must:** Generate Elysia server setup with cors + swagger + tracePlugin + apiRoutes composition
-- [ ] **Must:** Configure Swagger at `/swagger` as the default documentation page — Elysia's swagger plugin serves the UI at this path automatically. Log the Swagger URL at server startup.
+- [ ] **Must:** Configure Swagger at `/swagger` as the default documentation page — Elysia's openapi plugin serves the UI at this path. The root `/` must redirect or default to `/swagger`. Log the Swagger URL at server startup.
+- [ ] **Must:** Never use `/api` as a route prefix. Routes start with `/v1` or `/v<version-number>` directly (e.g., `.group("/v1", ...)` not `.group("/api/v1", ...)`)
 - [ ] **Must:** After smoke tests pass, use Playwright to navigate to `/swagger`, verify the page loads (title contains API name), take a screenshot, and save it to `.docs/swagger-verification.png`. Include the screenshot in the results documentation as proof of successful deployment.
 - [ ] **Must:** Generate trace plugin with onRequest (ULID traceId), onAfterHandle (log response), onError (log error)
 - [ ] **Must:** Generate env config as Zod schema validating Bun.env at startup, exported as singleton

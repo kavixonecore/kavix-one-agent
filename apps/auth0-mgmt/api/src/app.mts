@@ -30,7 +30,7 @@ export function createApp(): Elysia {
       version: "0.1.0",
       environment: process.env["NODE_ENV"] ?? "development",
     }))
-    .group("/api/v1", (group) =>
+    .group("/v1", (group) =>
       group
         .use(orgsRouter())
         .use(rolesRouter())

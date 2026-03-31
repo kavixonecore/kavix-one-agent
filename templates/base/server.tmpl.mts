@@ -40,7 +40,7 @@ export function createServer(
   logger: winston.Logger,
   container: IContainer
 ): Elysia {
-  const apiRoutes = new Elysia({ prefix: "/api/v1" })
+  const apiRoutes = new Elysia({ prefix: "/v1" })
 ${routerMounts};
 
   return new Elysia()

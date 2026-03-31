@@ -1,9 +1,13 @@
 {
-  "/api": {
+  "/v1": {
     "target": "http://localhost:3100",
     "secure": false
   },
   "/health": {
+    "target": "http://localhost:3100",
+    "secure": false
+  },
+  "/swagger": {
     "target": "http://localhost:3100",
     "secure": false
   }
