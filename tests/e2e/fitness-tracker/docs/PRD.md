@@ -342,6 +342,18 @@ export const MetricType = {
 | Health Check                  | /health returns 200            | `curl localhost:PORT/health` returns OK         |
 | Angular Build                 | Zero build errors               | `ng build` exits with code 0                     |
 | Chart Rendering               | All 5 chart types render data   | Manual verification in browser                   |
+| Auth0 Social Login            | Google login works end-to-end   | Playwright AC test: `ui/e2e/auth0-social-login.spec.ts` |
+
+### Acceptance Criteria — Auth0 Social Login
+
+| AC | Criteria | Test | Pass Condition |
+|----|----------|------|----------------|
+| AC-1 | User can login via Google social, land on dashboard, and call protected API | `auth0-social-login.spec.ts` | User completes Google auth within 3 min, redirected to dashboard, API returns 200 (not 401) |
+| AC-2 | Unauthenticated user cannot access protected routes | `auth0-social-login.spec.ts` | Navigating to /workouts without auth redirects to /auth/login |
+| AC-3 | Unauthenticated API call returns 401 | `auth0-social-login.spec.ts` | `GET /exercises` without token returns `{ success: false }` with status 401 |
+| AC-4 | Public endpoints accessible without auth | `auth0-social-login.spec.ts` | `GET /health` returns 200, `GET /swagger` returns 200 |
+
+**Run:** `npx playwright test --config=ui/e2e/playwright.config.ts` (headed mode — requires manual Google auth)
 
 ---
 
