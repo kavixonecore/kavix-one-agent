@@ -1,0 +1,93 @@
+name: E2E Auth0 Social Login
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tests/e2e/fitness-tracker/ui/e2e/**"
+      - "tests/e2e/fitness-tracker/src/shared/auth/**"
+
+jobs:
+  auth0-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: password
+          MONGO_INITDB_DATABASE: fitness_tracker
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium
+
+      - name: Install API dependencies
+        working-directory: tests/e2e/fitness-tracker
+        run: bun install
+
+      - name: Install UI dependencies
+        working-directory: tests/e2e/fitness-tracker/ui/fitness-tracker-ui
+        run: npm install --legacy-peer-deps
+
+      - name: Start API server
+        working-directory: tests/e2e/fitness-tracker
+        run: bun src/index.mts &
+        env:
+          MONGODB_URI: mongodb://admin:password@localhost:27017/fitness_tracker?authSource=admin
+          PORT: "3000"
+          JWKS_URL: https://davis-sylvester.us.auth0.com/.well-known/jwks.json
+          JWT_ISSUER: https://davis-sylvester.us.auth0.com/
+          JWT_AUDIENCE: https://api.fitness-tracker.local
+          RATE_LIMIT_IP_PER_MIN: "100"
+          RATE_LIMIT_USER_PER_MIN: "1000"
+
+      - name: Start Angular UI
+        working-directory: tests/e2e/fitness-tracker/ui/fitness-tracker-ui
+        run: npx ng serve --proxy-config proxy.conf.json --port 4200 &
+
+      - name: Wait for services
+        run: |
+          echo "Waiting for API..."
+          timeout 30 bash -c 'until curl -s http://localhost:3000/health; do sleep 1; done'
+          echo ""
+          echo "Waiting for Angular..."
+          timeout 60 bash -c 'until curl -s http://localhost:4200; do sleep 1; done'
+          echo ""
+          echo "Both services ready."
+
+      - name: Run Auth0 E2E tests
+        working-directory: tests/e2e/fitness-tracker
+        run: npx playwright test --config=ui/e2e/playwright.config.ts
+        env:
+          AUTH0_GOOGLE_USER_EMAIL: kavixone.core@gmail.com
+          AUTH0_GOOGLE_USER_EMAIL_PASSWORD: ${{ secrets.AUTH0_GOOGLE_USER_EMAIL_PASSWORD }}
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auth0-e2e-screenshots
+          path: tests/e2e/fitness-tracker/ui/.docs/
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: tests/e2e/fitness-tracker/ui/.docs/playwright-report/
