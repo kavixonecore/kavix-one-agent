@@ -3,10 +3,24 @@
   min-height: 100vh;
 }
 
-.main-content {
+.content-area {
   flex: 1;
   margin-left: 240px;
-  padding: 24px 32px;
-  background: var(--bg-primary, #fafafa);
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  background: var(--bg, #f8fafc);
+  transition: margin-left 0.25s ease;
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px 32px;
+  overflow-y: auto;
+}
+
+@media (max-width: 1024px) {
+  .content-area {
+    margin-left: 60px;
+  }
 }

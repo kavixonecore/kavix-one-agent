@@ -1,0 +1,169 @@
+<div class="dashboard">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+    <span class="page-sub">Auth0 Management Overview</span>
+  </div>
+
+  @if (state.loading()) {
+    <app-loading></app-loading>
+  } @else {
+
+    <!-- Row 1: Stat Cards -->
+    <div class="stats-row">
+      <div class="stat-card teal-border">
+        <div class="stat-icon teal-bg">
+          <mat-icon>business</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Total Organizations</div>
+          <div class="stat-value">{{ state.orgCount() }}</div>
+        </div>
+      </div>
+
+      <div class="stat-card amber-border">
+        <div class="stat-icon amber-bg">
+          <mat-icon>admin_panel_settings</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Total Roles</div>
+          <div class="stat-value">{{ state.roleCount() }}</div>
+        </div>
+      </div>
+
+      <div class="stat-card indigo-border">
+        <div class="stat-icon indigo-bg">
+          <mat-icon>link</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Total Connections</div>
+          <div class="stat-value">{{ state.connectionCount() }}</div>
+        </div>
+      </div>
+
+      <div class="stat-card violet-border">
+        <div class="stat-icon violet-bg">
+          <mat-icon>hub</mat-icon>
+        </div>
+        <div class="stat-info">
+          <div class="stat-label">Org Connections</div>
+          <div class="stat-value">{{ state.orgConnectionCount() }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Charts -->
+    <div class="charts-row">
+      <div class="card chart-card chart-main">
+        <h3 class="chart-title">Connections by Type</h3>
+        <div class="bar-chart">
+          @for (item of state.connectionsByStrategy(); track item.strategy) {
+            <div class="bar-row">
+              <span class="bar-label">{{ item.strategy }}</span>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="item.pct"></div>
+              </div>
+              <span class="bar-count">{{ item.count }}</span>
+            </div>
+          }
+          @if (state.connectionsByStrategy().length === 0) {
+            <p class="empty-state">No connection data available.</p>
+          }
+        </div>
+      </div>
+
+      <div class="card chart-card chart-side">
+        <h3 class="chart-title">Organization Distribution</h3>
+        <div class="ring-display">
+          <div class="ring-outer">
+            <div class="ring-inner">
+              <span class="ring-value">{{ state.orgCount() }}</span>
+              <span class="ring-sub">Organizations</span>
+            </div>
+          </div>
+          <div class="ring-stats">
+            <div class="ring-stat">
+              <span class="dot teal"></span>
+              <span>With members</span>
+            </div>
+            <div class="ring-stat">
+              <span class="dot violet"></span>
+              <span>Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3: Recent Organizations -->
+    <div class="card recent-card">
+      <div class="section-header">
+        <h3 class="section-title">Recent Organizations</h3>
+        <a class="view-all-link" routerLink="/organizations">View All &rarr;</a>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Display Name</th>
+            <th>ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (org of state.recentOrgs(); track org.id) {
+            <tr>
+              <td>{{ org.name }}</td>
+              <td>{{ org.displayName }}</td>
+              <td class="mono">{{ org.id }}</td>
+            </tr>
+          }
+          @if (state.recentOrgs().length === 0) {
+            <tr>
+              <td colspan="3" class="empty-cell">No organizations found.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Row 4: Quick Actions -->
+    <div class="actions-row">
+      <a class="action-card" routerLink="/organizations">
+        <div class="action-icon teal-bg">
+          <mat-icon>add_business</mat-icon>
+        </div>
+        <div class="action-info">
+          <span class="action-title">Create Organization</span>
+          <span class="action-desc">Add a new Auth0 organization</span>
+        </div>
+        <mat-icon class="action-arrow">arrow_forward</mat-icon>
+      </a>
+
+      <a class="action-card" routerLink="/roles">
+        <div class="action-icon indigo-bg">
+          <mat-icon>add_moderator</mat-icon>
+        </div>
+        <div class="action-info">
+          <span class="action-title">Create Role</span>
+          <span class="action-desc">Define a new permission role</span>
+        </div>
+        <mat-icon class="action-arrow">arrow_forward</mat-icon>
+      </a>
+
+      <a class="action-card" routerLink="/settings">
+        <div class="action-icon violet-bg">
+          <mat-icon>settings_ethernet</mat-icon>
+        </div>
+        <div class="action-info">
+          <span class="action-title">Manage Connections</span>
+          <span class="action-desc">Configure identity providers</span>
+        </div>
+        <mat-icon class="action-arrow">arrow_forward</mat-icon>
+      </a>
+    </div>
+
+  }
+
+  @if (state.error()) {
+    <p class="error-text">{{ state.error() }}</p>
+  }
+</div>

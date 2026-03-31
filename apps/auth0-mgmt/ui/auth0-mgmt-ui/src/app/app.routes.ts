@@ -1,7 +1,13 @@
 import type { Routes } from "@angular/router";
 
 export const routes: Routes = [
-  { path: "", redirectTo: "organizations", pathMatch: "full" },
+  { path: "", redirectTo: "dashboard", pathMatch: "full" },
+  {
+    path: "dashboard",
+    loadComponent: () =>
+      import("./features/dashboard/components/dashboard/dashboard.component")
+        .then((m) => m.DashboardComponent),
+  },
   {
     path: "organizations",
     loadComponent: () =>
@@ -32,5 +38,5 @@ export const routes: Routes = [
       import("./features/settings/components/settings/settings.component")
         .then((m) => m.SettingsComponent),
   },
-  { path: "**", redirectTo: "organizations" },
+  { path: "**", redirectTo: "dashboard" },
 ];
