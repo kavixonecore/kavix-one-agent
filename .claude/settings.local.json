@@ -54,22 +54,11 @@
       "Bash(do sed:*)",
       "Bash(echo \"Fixed: $f\")",
       "WebFetch(domain:elysiajs.com)",
-      "Bash(ng version:*)",
-      "Bash(ng new:*)",
-      "Bash(npm install:*)",
-      "Bash(do curl:*)",
-      "Bash(break)",
-      "Bash(done)",
-      "Bash(taskkill //F //IM node.exe //FI 'WINDOWTITLE eq *ng serve*')",
-      "Bash(pkill -f 'ng serve')",
-      "Bash(pkill -f @angular)",
-      "Bash(lsof -ti:4200)",
-      "Bash(xargs kill:*)",
-      "Bash(netstat -ano)",
-      "Bash(do taskkill:*)",
-      "Bash(find D:/projects/kavixone/kavix-one-agent/tests/e2e/fitness-tracker -type f \\\\\\(-name *auth* -o -name *Auth0* -o -name *0auth* \\\\\\))",
-      "Bash(find D:/projects/kavixone/kavix-one-agent/tests/e2e/fitness-tracker -maxdepth 2 -type f \\\\\\(-name *.env* -o -name *config* -o -name settings.json \\\\\\))",
-      "Bash(node screenshot.mjs)"
+      "Bash(find /c/projects/kavix-one/agent-one -type f \\\\\\(-name *.env* -o -name environment*.ts -o -name *auth* \\\\\\))",
+      "Bash(find /c/projects/kavix-one/agent-one -type f -name .env*)",
+      "Bash(find /c/projects/kavix-one/agent-one -type f -name environment*.ts)",
+      "Bash(find /c/projects/kavix-one/agent-one/apps/auth0-mgmt -type f \\\\\\(-name *.ts -o -name *.mts -o -name *.js \\\\\\))",
+      "mcp__plugin_playwright_playwright__browser_wait_for"
     ]
   }
 }

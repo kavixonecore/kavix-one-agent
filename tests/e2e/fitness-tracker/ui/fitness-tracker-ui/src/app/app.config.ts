@@ -23,7 +23,6 @@ export const appConfig: ApplicationConfig = {
       authorizationParams: {
         redirect_uri: typeof window !== "undefined" ? window.location.origin : "",
         audience: environment.auth0.audience,
-        organization: environment.auth0.organizationId,
       },
       httpInterceptor: {
         allowedList: ["/api/*"],

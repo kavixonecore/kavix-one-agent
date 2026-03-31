@@ -3,9 +3,9 @@ export const environment = {
   apiBaseUrl: "http://localhost:3000",
   logLevel: "debug",
   auth0: {
-    domain: "YOUR_TENANT.auth0.com",
-    clientId: "YOUR_SPA_CLIENT_ID",
+    domain: "davis-sylvester.us.auth0.com",
+    clientId: "jTgciii6X3sf54VMWFef7eYWeXWmEwnk",
     audience: "https://api.fitness-tracker.local",
-    organizationId: "YOUR_ORG_ID",
+    organizationId: "org_jgArX0H6IXWwiZFz",
   },
 };

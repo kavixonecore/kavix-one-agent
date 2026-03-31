@@ -45,18 +45,13 @@ export class DevLoginComponent {
 
   loginDefault(): void {
     this.isLoading.set(true);
-    this.auth.loginWithRedirect({
-      authorizationParams: {
-        organization: environment.auth0.organizationId,
-      },
-    });
+    this.auth.loginWithRedirect();
   }
 
   private redirectWithConnection(connection: string): void {
     this.isLoading.set(true);
     this.auth.loginWithRedirect({
       authorizationParams: {
-        organization: environment.auth0.organizationId,
         connection,
       },
     });
