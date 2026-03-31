@@ -111,13 +111,42 @@ Created `.github/workflows/e2e-auth0.yml`:
 
 ---
 
+### 11. Route Prefix Rule: /v1 not /api/v1
+
+- Removed `/api` prefix across all mgmt routes, tests, proxy, environments
+- Server template updated: `.group("/v1", ...)` not `/api/v1`
+- Saved as hard rule in memory + PRD
+
+### 12. Auth0 Mgmt UI Professional Redesign
+
+Complete visual overhaul of the Auth0 Management dashboard:
+- **New color scheme:** Deep indigo/slate sidebar, teal/amber/violet accents
+- **Dark sidebar:** Shield logo, nav items with icons, indigo active state
+- **Top bar:** Search input, notification bell, user avatar
+- **Dashboard landing page:**
+  - 4 stat cards (orgs: 4, roles: 4, connections: 8, org connections)
+  - Connections by Type horizontal bar chart (CSS-only)
+  - Organization Distribution donut chart
+  - Recent Organizations table
+  - Quick Action buttons
+- **All pages restyled:** Card-based layout, clean tables, consistent styling
+- **Responsive:** Sidebar collapses to 60px icons at <1024px
+- Verified via Playwright screenshots
+
+### 13. @auth0/auth0-angular v2.x Installed
+
+Installed in fitness tracker UI with `--legacy-peer-deps` for Angular 21 compatibility.
+
+---
+
 ## Aggregate Statistics (End of Session 5)
 
 | Metric | Value |
 |--------|-------|
 | **Total tests** | 813+ (agent-one + fitness tracker + auth AC) |
-| **Git commits on main** | 38 |
+| **Git commits on main** | 42 |
 | **Auth0 apps configured** | 2 (SPA + M2M) |
 | **Auth0 org connections** | 3 (database, Google, GitHub) |
 | **Playwright AC tests** | 5 (AC-1 automated, AC-1 manual, AC-2, AC-3, AC-4) |
 | **GitHub Actions workflows** | 1 (e2e-auth0.yml) |
+| **Auth0 mgmt UI** | Professional dashboard with charts, stat cards, dark sidebar |

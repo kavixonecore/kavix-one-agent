@@ -1,98 +1,80 @@
 # What's Next — Agent-One Roadmap
 
-> **Last Updated:** 2026-03-30 (Session 4)
-> **Current State:** 867 tests across 4 packages, 2 Angular apps, Auth0 mgmt CLI/API/dashboard, fitness tracker fully wired with Auth0
+> **Last Updated:** 2026-03-30 (Session 5)
+> **Current State:** 867+ tests, Auth0 fully configured, mgmt dashboard redesigned, fitness tracker UI with auth, GitHub Actions e2e workflow
 
 ---
 
-## Completed This Session (Session 4)
+## Completed This Session (Session 5)
 
-- [x] Angular SPA standards defined (3 rounds of questions → angular-ui agent updated)
-- [x] Fitness tracker Angular UI (6 pages: dashboard, workouts, exercises, running, progress, login)
-- [x] Proxy collision fix (/api prefix + pathRewrite)
-- [x] Retry interceptor fix (skip 401/403/400/404)
-- [x] Auth redirect loop fix (3s cooldown)
-- [x] SKIP_AUTH env var for dev mode
-- [x] Auth0 skill created (.claude/skills/auth0-org-social/SKILL.md)
-- [x] Auth0 mgmt CLI (16 commands, 32 tests)
-- [x] Auth0 mgmt API (5 routers, 22 tests, port 3100)
-- [x] Auth0 mgmt Angular dashboard (7 features, ag-grid, signal state)
-- [x] @auth0/auth0-angular wired into fitness tracker (provideAuth0, authGuard, social login buttons)
-- [x] Playwright verification screenshots
+- [x] Auth0 configuration: SPA app, M2M app, organization, connections, API resource server
+- [x] Auth guard race condition fix (wait for isLoading$ before checking isAuthenticated$)
+- [x] organization_usage enabled on SPA app via Management API
+- [x] Auth0 Universal Login working with org-scoped connections (Google, GitHub, database)
+- [x] Playwright AC tests for Auth0 social login (5 specs, automated + manual modes)
+- [x] GitHub Actions e2e-auth0 workflow with secret for Google credentials
+- [x] /api prefix removed — all routes use /v1 directly (hard rule)
+- [x] @auth0/auth0-angular v2.x installed in fitness tracker
+- [x] Auth0 mgmt UI complete professional redesign (dark sidebar, stat cards, charts, responsive)
+- [x] Fitness Tracker API resource server created in Auth0
 
 ---
 
 ## Immediate Opportunities
 
-### 1. Configure Auth0 Credentials
-- Create `.env` in `apps/auth0-mgmt/` with real Auth0 M2M credentials
-- Update `tests/e2e/fitness-tracker/ui/fitness-tracker-ui/src/environments/environment.ts` with real Auth0 SPA credentials
-- Create Auth0 SPA application for the fitness tracker
-- Enable social connections (Google, GitHub, Apple, Microsoft) on the Auth0 tenant
-- Create an organization and enable connections on it
-- Test end-to-end social login flow
+### 1. Add GitHub Actions Secret
+Add `AUTH0_GOOGLE_USER_EMAIL_PASSWORD` to repo secrets, then run the e2e workflow.
 
-### 2. Run Ralph Loop on a New Project
-- Use `scripts/ralph-loop.sh` against a fresh domain to validate the pattern
-- Test with a completely different API (e.g., inventory, incidents, CRM)
-- Measure tokens per task, duration, pass rate
+### 2. Run Playwright AC Tests Locally
+```bash
+cd tests/e2e/fitness-tracker
+npx playwright test --config=ui/e2e/playwright.config.ts
+```
 
-### 3. Publish @kavix-one/agent-one to npm
-- Finalize package.json for publishing
-- Build step (if needed)
-- Publish to npm: `npx @kavix-one/agent-one generate my-api`
+### 3. Fitness Tracker UI Polish
+- Test full login → dashboard → CRUD flow end-to-end
+- Fix any UI issues found during testing
+- Add charts to fitness tracker dashboard (workout frequency, pace trends)
 
-### 4. Angular UI Tests
-- Write Jest unit tests for fitness tracker UI (target: 75% branch, 50% overall)
-- Write Playwright e2e tests for both Angular apps
-- Set up test CI pipeline
+### 4. Auth0 Mgmt UI Enhancements
+- Wire org detail page (members, connections, invites) with redesigned cards
+- Add real audit log data from API
+- Add member management (add/remove/role assign)
 
 ---
 
 ## Medium-Term
 
-### 5. Publish @sylvesterllc/eslint-config
-- Extract canonical ESLint config into shared package
-- All projects share same rules, no drift
-
-### 6. Add Integration Test Template to Agent-One
-- The integration test pattern (test-server helper + HTTP round-trips) needs to be templated
-- Agent-one should generate integration tests for every entity automatically (hard rule)
-- Template: `integration-test.tmpl.mts`
-
-### 7. Add More Addon Templates
-- GraphQL addon (Elysia + GraphQL Yoga)
-- WebSocket addon (real-time events)
-- Pagination helper addon
-
-### 8. CI/CD Pipeline
-- GitHub Actions for agent-one (lint + test on PR)
-- GitHub Actions template generated for output projects
-- Docker-compose for CI integration tests
-
-### 9. Auth0 Mgmt Enhancements
-- Wire audit log viewer to real MongoDB audit collection from fitness tracker API
-- Add login page branding configuration
-- Add bulk member import
-- Add connection health monitoring
+### 5. Publish @kavix-one/agent-one to npm
+### 6. Publish @sylvesterllc/eslint-config
+### 7. Run agent-one against a completely new domain
+### 8. CI/CD Pipeline (lint + test on PR)
+### 9. Angular UI tests (Jest unit + Playwright e2e)
 
 ---
 
 ## Long-Term
 
-### 10. Angular UI Generation (agent-one capability)
-- Add templates for Angular standalone components, services, routes
-- Generate matching UI for any API agent-one creates
-- Chart components, forms, data tables
-
-### 11. Multi-Agent Orchestration
-- Separate worker and reviewer agents (full Ralph Loop with cross-model review)
-- Parallel feature generation for independent entities
-
-### 12. Self-Improvement Loop
-- Agent-one analyzes trace data to identify template improvements
-- Feedback loop: failures → prompt adjustments → better output
-
+### 10. Angular UI Generation as agent-one capability
+### 11. Multi-Agent Orchestration (worker + reviewer)
+### 12. Self-Improvement Loop (trace analysis → template refinement)
 ### 13. S3 Trace Storage
-- trace-writer-s3.mts alongside fs and MongoDB writers
-- Long-term archival, cross-machine access
+
+---
+
+## Hard Rules
+
+1. No method > 30 lines
+2. Integration tests mandatory (HTTP round-trips against Docker MongoDB)
+3. Doc-sync after every code change
+4. Session docs at end of every session
+5. No deprecated APIs (use @elysiajs/openapi, jose, read docs when unsure)
+6. ESLint --fix after every change
+7. /health not /healthz
+8. Double quotes, no any, explicit return types, no readonly (except ITraceEntry)
+9. `as const` objects for enums, Winston logger, named exports, barrel files
+10. Response: `{ success: true, data, count }` or `{ success: false, error }`
+11. Playwright AC tests for auth flows
+12. Never use /api as route prefix — use /v1 directly
+13. Default page is always OpenAPI/Swagger at /swagger
+14. Never use @elysiajs/swagger — use @elysiajs/openapi
