@@ -1,7 +1,7 @@
 # Resume Next — Pick Up Here
 
-> **Last Session:** 2026-03-29 (Session 3)
-> **Repo:** https://github.com/kavixonecore/kavix-one-agent.git (28 commits on main)
+> **Last Session:** 2026-03-30 (Session 5)
+> **Repo:** https://github.com/kavixonecore/kavix-one-agent.git (38 commits on main)
 
 ---
 
@@ -11,47 +11,42 @@
 |-----------|--------|-------|
 | Agent-one harness (all 5 phases) | Complete | 622 |
 | Fitness tracker API (5 entities + JWT auth) | Complete | 191 |
-| JWT auth addon template | Complete | 28 (part of 622) |
-| 7 addon templates total | Complete | included |
-| **Total** | | **813 tests, 0 failures** |
+| Fitness tracker Angular UI (6 pages) | Complete | — |
+| Auth0 mgmt app (CLI + API + dashboard) | Complete | 54 |
+| Auth0 configured (SPA + M2M + org) | Working | — |
+| Playwright Auth0 AC tests | Created | 5 specs |
+| GitHub Actions e2e-auth0 workflow | Created | Needs secret |
+| **Total** | | **867+ tests** |
 
-## What's Running
+## Auth0 Status
 
-- Docker MongoDB: `fitness-tracker-mongo` on port 27017
-  - Restart: `cd tests/e2e/fitness-tracker && docker compose up -d`
-- API NOT running (start with env vars):
-  ```bash
-  cd tests/e2e/fitness-tracker
-  MONGODB_URI="mongodb://admin:password@localhost:27017/fitness_tracker?authSource=admin" \
-  JWKS_URL="https://your-tenant.auth0.com/.well-known/jwks.json" \
-  bun src/index.mts
-  ```
-- Swagger: http://localhost:3000/swagger
+- Domain: `davis-sylvester.us.auth0.com`
+- SPA app: `jTgciii6X3sf54VMWFef7eYWeXWmEwnk` (organization_usage=allow)
+- M2M app: `CVTeRH9NkcZW6XDy6aXuQdqT4JF9LJ9Y`
+- Org: `org_jgArX0H6IXWwiZFz` (Google + GitHub + database connections)
+- API: `https://api.fitness-tracker.local`
+- Login: Working via Auth0 Universal Login
 
-## What Was Built in Session 3
+## GitHub Actions Secret Needed
 
-- JWT auth (provider-agnostic JWKS, rate limiting, audit logging)
-- 90 comprehensive CRUD integration tests with exact status code verification
-- Agent-one custom agent at `~/.claude/agents/agent-one.md`
-- 30-line method rule, deprecated API rule, doc-sync rule
+Add to repo settings (`Settings → Secrets → Actions`):
+- `AUTH0_GOOGLE_USER_EMAIL_PASSWORD` — password for `kavixone.core@gmail.com`
 
 ## Top Priority — What to Do Next
 
-### Option A: Build the Angular UI (recommended — PRD + tasks ready)
-- **PRD:** `tests/e2e/fitness-tracker/ui/docs/PRD.md` — fully fleshed out with design, UX, charts, auth, testing
-- **Tasks:** `tests/e2e/fitness-tracker/ui/docs/TASKS.md` — 13 tasks, ~121 files, dependency graph
-- **API ref:** `tests/e2e/fitness-tracker/ui/memory.md` — complete endpoint reference with auth
-- **Agent:** `@angular-ui` subagent ready at `.claude/agents/angular-ui.md`
-- Run: invoke `@angular-ui` or use oda-agent against `ui/docs/TASKS.md`
+### Option A: Run the Playwright AC tests
+```bash
+cd tests/e2e/fitness-tracker
+npx playwright test --config=ui/e2e/playwright.config.ts
+```
 
-### Option B: Test agent-one on a new domain
-- Run Ralph Loop or oda-agent against a completely different API
-- Validate templates produce correct auth + CRUD + integration tests
+### Option B: Build remaining Angular UI features
+- PRD: `tests/e2e/fitness-tracker/ui/docs/PRD.md`
+- Tasks: `tests/e2e/fitness-tracker/ui/docs/TASKS.md` (13 tasks)
+- Agent: `@angular-ui`
 
-### Option C: Publish @kavix-one/agent-one to npm
-
-### Option D: Wire Auth0/Cognito for real JWT testing
-- Currently uses mock JWKS in tests. Could add a real Auth0 tenant for manual testing.
+### Option C: Test agent-one on a new domain
+### Option D: Publish to npm
 
 ## Hard Rules
 
@@ -65,3 +60,4 @@
 8. Double quotes, no any, explicit return types, no readonly (except ITraceEntry)
 9. `as const` objects for enums, Winston logger, named exports, barrel files
 10. Response: `{ success: true, data, count }` or `{ success: false, error }`
+11. Playwright AC tests for auth flows

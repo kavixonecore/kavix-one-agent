@@ -23,3 +23,4 @@
 | 12 | [12-session-log.md](12-session-log.md) | Session 1 log — Phases 1-5 build, ~617K tokens, 590 tests |
 | 13 | [13-session-2-log.md](13-session-2-log.md) | Session 2 log — Integration tests, Swagger fix, Playwright, Ralph Loop, 735 total tests |
 | 14 | [14-session-3-log.md](14-session-3-log.md) | Session 3 log — JWT auth, enhanced CRUD tests, agent-one custom agent, 813 total tests |
+| 15 | [15-session-5-log.md](15-session-5-log.md) | Session 5 log — Auth0 config, org setup, auth guard fix, Playwright AC tests, GitHub Actions |

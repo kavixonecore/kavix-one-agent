@@ -239,6 +239,7 @@ agent-one ships with six addon templates for infrastructure scaffolding:
 | **External API Client** | HTTP client template with typed request/response contracts and error handling |
 | **Teams Notification** | Microsoft Teams webhook notification integration template |
 | **Timer Job** | Scheduled/cron job template with configurable intervals and logging |
+| **JWT Auth** | Provider-agnostic JWKS auth, rate limiting, audit logging (Auth0, Cognito, Azure AD) |
 
 Addons implement the `ITemplate` interface and are discovered automatically via filesystem-based registry. Drop a new template folder into `templates/addons/` and it becomes available.
 
@@ -266,6 +267,41 @@ The test suite covers four levels:
 - **L2** -- Renderer integration tests (full feature and multi-feature generation)
 - **L3** -- Compilation tests (`tsc --noEmit` on generated output)
 - **L4** -- Lint tests (`eslint --fix` + `eslint` on generated output)
+
+### E2E Auth0 Tests (Playwright)
+
+The fitness tracker includes Playwright acceptance criteria tests for Auth0 social login:
+
+```bash
+# Local (headed — manual Google auth, 3 min timeout)
+cd tests/e2e/fitness-tracker
+npx playwright test --config=ui/e2e/playwright.config.ts
+
+# CI (automated — uses Google credentials from env)
+AUTH0_GOOGLE_USER_EMAIL_PASSWORD=<password> npx playwright test --config=ui/e2e/playwright.config.ts
+```
+
+| AC | Test | Criteria |
+|----|------|----------|
+| AC-1 | Google login end-to-end | Login via Google → dashboard → API returns 200 |
+| AC-2 | Protected route guard | /workouts without auth → redirect to /auth/login |
+| AC-3 | API without token | GET /exercises → 401 |
+| AC-4 | Public endpoints | GET /health → 200, GET /swagger → 200 |
+
+**GitHub Actions:** Runs on push to auth paths or manual dispatch. Requires `AUTH0_GOOGLE_USER_EMAIL_PASSWORD` secret.
+
+---
+
+## Custom Agents
+
+agent-one includes two custom Claude Code agents at `.claude/agents/`:
+
+| Agent | Invoke | Purpose |
+|-------|--------|---------|
+| `agent-one` | `@agent-one Build a work order API` | Generates Elysia APIs from prompts/PRDs |
+| `angular-ui` | `@angular-ui Build the fitness tracker UI` | Generates Angular frontends for existing APIs |
+
+Both are versioned in the repo and also installed globally at `~/.claude/agents/`.
 
 ---
 
